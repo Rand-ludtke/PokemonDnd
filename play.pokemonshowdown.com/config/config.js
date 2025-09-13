@@ -19,12 +19,13 @@ Config.whitelist = [
 // `defaultserver` specifies the server to use when the domain name in the
 // address bar is `Config.routes.client`.
 Config.defaultserver = {
-	id: 'myserver',
-	host: '47.218.210.137',
-	port: 8000,
-	httpport: 8000,
-	altport: 0,
-	registered: false
+ id: 'myserver',
+ protocol: 'https',
+ host: 'server.pokemondnd.xyz',
+ port: 443,
+ httpport: 443,
+ altport: 0,
+ registered: false
 };
 
 Config.roomsFirstOpenScript = function () {
@@ -37,11 +38,11 @@ Config.customcolors = {
 Config.version = "0.11.2 (322528ff)";
 
 Config.routes = {
-	root: '47.218.210.137:8000',
-	client: '47.218.210.137:8000',
-	dex: 'dex.pokemonshowdown.com',
-	replays: 'replay.pokemonshowdown.com',
-	users: 'pokemonshowdown.com/users',
-	teams: 'teams.pokemonshowdown.com',
+ root: 'server.pokemondnd.xyz',
+ client: 'server.pokemondnd.xyz',
+ dex: 'dex.pokemonshowdown.com',
+ replays: 'replay.pokemonshowdown.com',
+ users: 'pokemonshowdown.com/users',
+ teams: 'teams.pokemonshowdown.com',
 };
 /*** End automatically generated configuration ***/
