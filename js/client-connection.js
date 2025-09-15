@@ -317,16 +317,16 @@ try{
 
 if(window.PS_SKIP_CROSSDOMAIN){var _Config2;
 (_Config2=Config).server||(_Config2.server=Config.defaultserver);
-this.loaded=true;
-return;
+this.loaded=Promise.resolve();
+return this.loaded;
 }
 }catch(_unused5){}
 
 
 if(/pokemondnd\.xyz$/.test(Config.routes.client)){var _Config3;
 (_Config3=Config).server||(_Config3.server=Config.defaultserver);
-this.loaded=true;
-return;
+this.loaded=Promise.resolve();
+return this.loaded;
 }
 var iframe=document.createElement('iframe');
 iframe.src='https://'+Config.routes.client+'/crossdomain.php?host='+

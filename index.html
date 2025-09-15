@@ -92,6 +92,19 @@ window.PS_SKIP_CROSSDOMAIN = true;
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
 <script src="./js/client-core.js?v1"></script>
 <script src="./js/client-connection.js?v1"></script>
+<script>
+// Poll for connection state to update loading UI (temporary until mainmenu renders)
+(function pollConnected(){
+	try {
+		if (window.PS && window.PS.connection && window.PS.connection.connected) {
+			var lm=document.getElementById('loading-message');
+			if (lm && !/Connected\!/.test(lm.innerHTML)) lm.innerHTML='Connected! Loading lobby...';
+			return;
+		}
+	} catch(e){}
+	setTimeout(pollConnected,400);
+})();
+</script>
 <!-- Modern bundle supplies its own module system; legacy libs omitted. -->
 
 <script>
@@ -123,7 +136,7 @@ window.PS_SKIP_CROSSDOMAIN = true;
 -->
 
 <!-- Modern entrypoint (generated from TypeScript). Depends on client-core & client-connection above. -->
-<script src="./js/client-main.js?v1" type="text/javascript" onload="(function(){try{var lm=document.getElementById('loading-message'); if(lm) lm.innerHTML='Client loaded. Connecting...';}catch(e){}})();"></script>
+<script src="./js/client-main.js?v1" type="text/javascript" onload="(function(){try{var lm=document.getElementById('loading-message'); if(lm && !/Connected/.test(lm.innerHTML)) lm.innerHTML='Client loaded. Connecting...';}catch(e){}})();"></script>
 
 <script>
 // Provide a lightweight shim for old global expectations while new client initializes
