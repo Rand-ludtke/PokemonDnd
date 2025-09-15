@@ -25,15 +25,15 @@ socket=null;
 };
 
 function connectToServer(){
-if(!serverInfo)return;
 
-var port=serverInfo.protocol==='https'?'':":"+serverInfo.port;
-var url=serverInfo.protocol+"://"+serverInfo.host+port+serverInfo.prefix;
+var url='wss://server.pokemondnd.xyz/showdown/';
 
 try{
-socket=new SockJS(url,[],{timeout:5*60*1000});
+socket=new WebSocket(url);
 }catch(_unused){
-socket=new WebSocket(url.replace('http','ws')+'/websocket');
+socket=null;
+postMessage({type:'error',data:'Failed to connect to WebSocket at '+url});
+return;
 }
 if(socket){
 socket.onopen=function(){

@@ -28,27 +28,27 @@ function requireScript(url) {
 	document.head.appendChild(scriptEl);
 }
 
-linkStyle('https://47.218.210.137:8000/style/font-awesome.css?');
-linkStyle('https://47.218.210.137:8000/style/battle.css?a7');
-linkStyle('https://47.218.210.137:8000/style/replay.css?a7');
-linkStyle('https://47.218.210.137:8000/style/utilichart.css?a7');
+linkStyle('https://server.pokemondnd.xyz/style/font-awesome.css?');
+linkStyle('https://server.pokemondnd.xyz/style/battle.css?a7');
+linkStyle('https://server.pokemondnd.xyz/style/replay.css?a7');
+linkStyle('https://server.pokemondnd.xyz/style/utilichart.css?a7');
 
-requireScript('https://47.218.210.137:8000/js/lib/ps-polyfill.js');
-requireScript('https://47.218.210.137:8000/config/config.js?a7');
-requireScript('https://47.218.210.137:8000/js/lib/jquery-1.11.0.min.js');
-requireScript('https://47.218.210.137:8000/js/lib/html-sanitizer-minified.js');
-requireScript('https://47.218.210.137:8000/js/battle-sound.js');
-requireScript('https://47.218.210.137:8000/js/battledata.js?a7');
-requireScript('https://47.218.210.137:8000/data/pokedex-mini.js?a7');
-requireScript('https://47.218.210.137:8000/data/pokedex-mini-bw.js?a7');
-requireScript('https://47.218.210.137:8000/data/graphics.js?a7');
-requireScript('https://47.218.210.137:8000/data/pokedex.js?a7');
-requireScript('https://47.218.210.137:8000/data/moves.js?a7');
-requireScript('https://47.218.210.137:8000/data/abilities.js?a7');
-requireScript('https://47.218.210.137:8000/data/items.js?a7');
-requireScript('https://47.218.210.137:8000/data/teambuilder-tables.js?a7');
-requireScript('https://47.218.210.137:8000/js/battle-tooltips.js?a7');
-requireScript('https://47.218.210.137:8000/js/battle.js?a7');
+requireScript('https://server.pokemondnd.xyz/js/lib/ps-polyfill.js');
+requireScript('https://server.pokemondnd.xyz/config/config.js?a7');
+requireScript('https://server.pokemondnd.xyz/js/lib/jquery-1.11.0.min.js');
+requireScript('https://server.pokemondnd.xyz/js/lib/html-sanitizer-minified.js');
+requireScript('https://server.pokemondnd.xyz/js/battle-sound.js');
+requireScript('https://server.pokemondnd.xyz/js/battledata.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/pokedex-mini.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/pokedex-mini-bw.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/graphics.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/pokedex.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/moves.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/abilities.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/items.js?a7');
+requireScript('https://server.pokemondnd.xyz/data/teambuilder-tables.js?a7');
+requireScript('https://server.pokemondnd.xyz/js/battle-tooltips.js?a7');
+requireScript('https://server.pokemondnd.xyz/js/battle.js?a7');
 
 var Replays = {
 	battle: null,

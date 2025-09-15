@@ -25,15 +25,15 @@ self.onmessage = (event: MessageEvent) => {
 };
 
 function connectToServer() {
-	if (!serverInfo) return;
-
-	const port = serverInfo.protocol === 'https' ? '' : `:${serverInfo.port}`;
-	const url = `${serverInfo.protocol}://${serverInfo.host}${port}${serverInfo.prefix}`;
+	// Always use your backend WebSocket endpoint
+	const url = 'wss://server.pokemondnd.xyz/showdown/';
 
 	try {
-		socket = new SockJS(url, [], { timeout: 5 * 60 * 1000 });
+		socket = new WebSocket(url);
 	} catch {
-		socket = new WebSocket(url.replace('http', 'ws') + '/websocket');
+		socket = null;
+		postMessage({ type: 'error', data: 'Failed to connect to WebSocket at ' + url });
+		return;
 	}
 	if (socket) {
 		socket.onopen = () => {
