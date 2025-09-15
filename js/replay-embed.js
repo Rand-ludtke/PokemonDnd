@@ -1,15 +1,21 @@
-// Minimal placeholder replay embed template for custom deployment.
-// The build script (build-tools/update) replaces domain references and cachebusts this file.
-// If you customize the replay embedding UI, edit this template and rebuild.
+/*
+ * Placeholder replay embed template.
+ * The build script (build-tools/update) reads this file and injects a hashed
+ * version to produce replay-embed.js for cache busting.
+ *
+ * If you want a functional embed, replace the minimal implementation below
+ * with the upstream version or a custom loader.
+ */
 (function(){
-	// Basic stub: expose a createReplayEmbed function expected by downstream code (if any).
-	window.createReplayEmbed = function(replayId){
-		var container = document.getElementById('replay-embed');
-		if(!container){
-			container = document.createElement('div');
-			container.id = 'replay-embed';
-			document.body.appendChild(container);
-		}
-		container.innerHTML = 'Replay placeholder for ' + replayId + '. (Customize replay-embed.template.js)';
-	};
+	// Basic no-op embed loader. Upstream usually defines window.showdownReplay
+	// or similar hook for embedding a replay inside an iframe.
+	if (typeof window !== 'undefined') {
+		window.showdownReplay = function showReplayPlaceholder(id, targetEl){
+			if (!targetEl) targetEl = document.getElementById('replay-root');
+			if (!targetEl) return;
+			targetEl.textContent = 'Replay placeholder (id: ' + id + ')';
+		};
+		// Debug marker so we know template got bundled.
+		if (window.console && console.debug) console.debug('[replay-embed.template] placeholder loaded');
+	}
 })();
