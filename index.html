@@ -75,8 +75,13 @@ https://psim.us/dev
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
 <!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
 <script src="./config/config.js?v1"></script>
+<!-- Core model layer must load before client-main (provides PSStreamModel, etc.) -->
+<script src="./js/client-core.js?v1"></script>
+<!-- Connection logic (establishes PSConnection helpers) -->
+<script src="./js/client-connection.js?v1"></script>
+<!-- SockJS transport library (required by client-connection) -->
 <script src="./js/lib/sockjs-1.4.0-nwjsfix.min.js"></script>
-<!-- Modern bundle supplies its own module system; legacy libs (jquery, lodash, backbone, d3, sanitizer) omitted. -->
+<!-- Modern bundle supplies its own module system; legacy libs omitted. -->
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading data...';
@@ -108,7 +113,7 @@ https://psim.us/dev
 <script src="./data/graphics.js?v1"></script>
 -->
 
-<!-- Modern entrypoint (generated from TypeScript). Ensure build produced client-main.js -->
+<!-- Modern entrypoint (generated from TypeScript). Depends on client-core & client-connection above. -->
 <script src="./js/client-main.js?v1" type="text/javascript"></script>
 
 <script>
