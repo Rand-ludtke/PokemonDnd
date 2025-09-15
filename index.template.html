@@ -75,36 +75,29 @@ https://psim.us/dev
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
 <!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
 <script src="./config/config.js?v1"></script>
-<!-- PS global stub inserted early so client-connection can safely reference PS before client-main defines full object -->
 <script>
-// Minimal PS stub; replaced/augmented once client-main loads.
 window.PS = window.PS || {
-	startTime: Date.now(),
-	rooms: {},
-	isOffline: true,
-	server: (window.Config && (Config.server || Config.defaultserver)) || {protocol:'https',host:location.hostname,port:443,prefix:'/showdown'},
-	update() {},
-	confirm(msg){ return Promise.resolve(false); },
-	alert(msg){ console.warn('[PS alert]', msg); },
+  startTime: Date.now(),
+  rooms: {},
+  isOffline: true,
+  server: (window.Config && (Config.server || Config.defaultserver)) || {protocol:'https',host:location.hostname,port:443,prefix:'/showdown'},
+  update() {},
+  confirm(msg){ return Promise.resolve(false); },
+  alert(msg){ console.warn('[PS alert]', msg); },
 };
 </script>
-<!-- Core model layer must load before client-main (provides PSStreamModel, etc.) -->
-<script src="./js/client-core.js?v1"></script>
-<!-- Connection logic (establishes PSConnection helpers) -->
-<script src="./js/client-connection.js?v1"></script>
-<!-- SockJS transport library (required by client-connection) -->
-<!-- SockJS local file (preferred); if missing, load CDN fallback -->
+<!-- SockJS first so client-connection has transport available -->
 <script src="./js/lib/sockjs-1.4.0-nwjsfix.min.js" onerror="console.warn('SockJS local 404, using CDN');var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js';document.head.appendChild(s);"></script>
+<script src="./js/client-core.js?v1"></script>
+<script src="./js/client-connection.js?v1"></script>
 <!-- Modern bundle supplies its own module system; legacy libs omitted. -->
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading data...';
 </script>
 
-<!-- Core compiled data bundle (contains battle dex/log/parser pieces) -->
 <script src="./js/battledata.js?v1"></script>
-<!-- Omitted storage.js and battle.js (legacy global-dependent) -->
-<script src="./js/lib/color-thief.min.js"></script>
+<!-- Removed color-thief (optional feature) for minimal deployment -->
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading modern client bundle...';

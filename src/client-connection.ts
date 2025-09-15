@@ -254,7 +254,16 @@ export class PSConnection {
 		} else {
 			PS.connection.reconnect();
 		}
-		PS.prefs.doAutojoin();
+		// prefs may not be ready yet; attempt now and schedule a retry
+		try {
+			if (PS.prefs && typeof (PS.prefs as any).doAutojoin === 'function') {
+				(PS.prefs as any).doAutojoin();
+			} else {
+				setTimeout(() => {
+					try { if (PS.prefs && typeof (PS.prefs as any).doAutojoin === 'function') (PS.prefs as any).doAutojoin(); } catch {}
+				}, 300);
+			}
+		} catch {}
 	}
 }
 
@@ -297,9 +306,11 @@ export class PSStorage {
 			document.body.appendChild(iframe);
 		} else {
 			Config.server ||= Config.defaultserver;
-			$(
-				`<iframe src="https://${Config.routes.client}/crossprotocol.html?v1.2" style="display: none;"></iframe>`
-			).appendTo('body');
+			// Append crossprotocol iframe without jQuery
+			const iframe = document.createElement('iframe');
+			iframe.src = `https://${Config.routes.client}/crossprotocol.html?v1.2`;
+			iframe.style.display = 'none';
+			try { document.body.appendChild(iframe); } catch {}
 			setTimeout(() => {
 				// HTTPS may be blocked
 				// yes, this happens, blame Avast! and BitDefender and other antiviruses
