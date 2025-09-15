@@ -96,9 +96,12 @@ https://psim.us/dev
 <script src="./js/lib/color-thief.min.js"></script>
 
 <script>
-	LM.innerHTML += ' DONE<br />Loading client...';
+	LM.innerHTML += ' DONE<br />Loading modern client bundle...';
 </script>
 
+<!-- Legacy client script block replaced by modern modular build -->
+<!-- If rollback needed, restore the commented block below -->
+<!--
 <script src="./data/commands.js?v1"></script>
 <script src="./js/client.js?v1"></script>
 <script src="./js/client-topbar.js?v1"></script>
@@ -111,29 +114,30 @@ https://psim.us/dev
 <script src="./js/client-battle.js?v1"></script>
 <script src="./js/client-rooms.js?v1"></script>
 <script src="./data/graphics.js?v1"></script>
+-->
 
- <script>
-    window.onload = () => {
-      if (self === top) {
-        window.app = new App();
-      } else {
-        var LM = document.getElementById('loading-message');
-        LM.innerHTML += ' IN FRAME<br />Please visit Showdown directly.';
-        top.location = self.location;
-      }
-    }
-  </script>
+<!-- Modern entrypoint (generated from TypeScript). Ensure build produced client-main.js -->
+<script src="./js/client-main.js?v1" type="text/javascript"></script>
 
+<script>
+// Provide a lightweight shim for old global expectations while new client initializes
+window.app = window.app || {}; // some legacy scripts or extensions may expect this
+// Debug flags can be set before load: localStorage.ps_debug_connect = '1';
+if (localStorage.getItem('ps_debug_connect') === '1') {
+	console.debug('[index] Modern client-main.js requested at', Date.now());
+}
+</script>
+
+<!-- Data scripts: if the modern bundle already includes dynamic loading, these may be redundant.
+	Keep them for now; remove after verifying network panel duplication. -->
 <script src="./data/pokedex.js?v1"></script>
 <script src="./data/moves.js?v1"></script>
 <script src="./data/items.js?v1"></script>
 <script src="./data/abilities.js?v1"></script>
-
 <script src="./data/search-index.js?v1"></script>
 <script src="./data/teambuilder-tables.js?v1"></script>
 <script src="./js/battle-dex-search.js?v1"></script>
 <script src="./js/search.js?v1"></script>
-
 <script src="./data/aliases.js?v1" async></script>
 <!--<script src="./js/clean-cookies.php" async></script>-->
 </body>

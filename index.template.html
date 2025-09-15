@@ -30,11 +30,11 @@ https://psim.us/dev
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <link rel="shortcut icon" href="./favicon.ico" id="dynamic-favicon" />
 <link rel="icon" sizes="256x256" href="./favicon-256.png" />
-<link rel="stylesheet" href="./style/battle.css?" />
-<link rel="stylesheet" href="./style/client.css?" />
-<link rel="stylesheet" href="./style/sim-types.css?" />
-<link rel="stylesheet" href="./style/utilichart.css?" />
-<link rel="stylesheet" href="./style/font-awesome.css?" />
+<link rel="stylesheet" href="./style/battle.css?v1" />
+<link rel="stylesheet" href="./style/client.css?v1" />
+<link rel="stylesheet" href="./style/sim-types.css?v1" />
+<link rel="stylesheet" href="./style/utilichart.css?v1" />
+<link rel="stylesheet" href="./style/font-awesome.css?v1" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="manifest" href="/manifest.json" />
 <!--[if lte IE 8]><script>document.location.replace('http://pokemonshowdown.com/autodownload/win');</script><![endif]-->
@@ -49,10 +49,10 @@ https://psim.us/dev
 	<div class="leftmenu">
 		<div class="activitymenu">
 			<div class="pmbox">
-				<div class="pm-window news-embed" data-newsid="<!-- newsid -->">
+				<div class="pm-window news-embed" data-newsid="0">
 					<h3><button class="closebutton" tabindex="-1"><i class="fa fa-times-circle"></i></button><button class="minimizebutton" tabindex="-1"><i class="fa fa-minus-circle"></i></button>News</h3>
 					<div class="pm-log" style="max-height:none">
-						<!-- news -->
+						[failed to retrieve news]
 					</div>
 				</div>
 			</div>
@@ -65,7 +65,7 @@ https://psim.us/dev
 	</div>
 	<div class="mainmenufooter">
 		<div class="bgcredit"></div>
-		<small><a href="//dex.pokemonshowdown.com/" target="_blank">Pok&eacute;dex</a> | <a href="//re./" target="_blank">Replays</a> | <a href="//pokemonshowdown.com/rules" target="_blank">Rules</a> | <a href="//pokemonshowdown.com/credits" target="_blank">Credits</a> | <a href="http://smogon.com/forums/" target="_blank">Forum</a> | <a href="//pokemonshowdown.com/privacy" target="_blank">Privacy policy</a></small>
+		<small><a href="//dex.pokemonshowdown.com/" target="_blank">Pok&eacute;dex</a> | <a href="//re./" target="_blank">Replays</a> | <a href="//server.pokemondnd.xyz/rules" target="_blank">Rules</a> | <a href="//server.pokemondnd.xyz/credits" target="_blank">Credits</a> | <a href="http://smogon.com/forums/" target="_blank">Forum</a> | <a href="//server.pokemondnd.xyz/privacy" target="_blank">Privacy policy</a></small>
 	</div>
 </div></div>
 <script>
@@ -73,68 +73,72 @@ https://psim.us/dev
 	LM.innerHTML += ' DONE<br />Loading libraries...';
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
-<script src="./config/config.js?"></script>
+<script src="./config/config.js?v1"></script>
 <script src="./js/lib/jquery-2.2.4.min.js"></script>
 <script src="./js/lib/jquery-cookie.js"></script>
-<script src="./js/lib/autoresize.jquery.min.js?"></script>
-<script src="./js/battle-sound.js?"></script>
-<script src="./js/lib/html-css-sanitizer-minified.js?"></script>
-<script src="./js/lib/lodash.core.js?"></script>
-<script src="./js/lib/backbone.js?"></script>
+<script src="./js/lib/autoresize.jquery.min.js?v1"></script>
+<script src="./js/battle-sound.js?v1"></script>
+<script src="./js/lib/html-css-sanitizer-minified.js?v1"></script>
+<script src="./js/lib/lodash.core.js?v1"></script>
+<script src="./js/lib/backbone.js?v1"></script>
 <script src="./js/lib/d3.v3.min.js"></script>
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading data...';
 </script>
 
-<script src="./js/battledata.js?"></script>
-<script src="./js/storage.js?"></script>
-<!--<script src="./data/pokedex-mini.js?"></script>-->
-<script src="./data/typechart.js?"></script>
-<script src="./js/battle.js?"></script>
+<script src="./js/battledata.js?v1"></script>
+<script src="./js/storage.js?v1"></script>
+<!--<script src="./data/pokedex-mini.js?v1"></script>-->
+<script src="./data/typechart.js?v1"></script>
+<script src="./js/battle.js?v1"></script>
 <script src="./js/lib/sockjs-1.4.0-nwjsfix.min.js"></script>
 <script src="./js/lib/color-thief.min.js"></script>
 
 <script>
-	LM.innerHTML += ' DONE<br />Loading client...';
+	LM.innerHTML += ' DONE<br />Loading modern client bundle...';
 </script>
 
-<script src="./data/commands.js?"></script>
-<script src="./js/client.js?"></script>
-<script src="./js/client-topbar.js?"></script>
-<script src="./js/client-mainmenu.js?"></script>
-<script src="./js/client-teambuilder.js?"></script>
-<script src="./js/client-ladder.js?"></script>
-<script src="./js/client-chat.js?"></script>
-<script src="./js/client-chat-tournament.js?"></script>
-<script src="./js/battle-tooltips.js?"></script>
-<script src="./js/client-battle.js?"></script>
-<script src="./js/client-rooms.js?"></script>
-<script src="./data/graphics.js?"></script>
+<!-- Legacy client script block replaced by modern modular build -->
+<!-- If rollback needed, restore the commented block below -->
+<!--
+<script src="./data/commands.js?v1"></script>
+<script src="./js/client.js?v1"></script>
+<script src="./js/client-topbar.js?v1"></script>
+<script src="./js/client-mainmenu.js?v1"></script>
+<script src="./js/client-teambuilder.js?v1"></script>
+<script src="./js/client-ladder.js?v1"></script>
+<script src="./js/client-chat.js?v1"></script>
+<script src="./js/client-chat-tournament.js?v1"></script>
+<script src="./js/battle-tooltips.js?v1"></script>
+<script src="./js/client-battle.js?v1"></script>
+<script src="./js/client-rooms.js?v1"></script>
+<script src="./data/graphics.js?v1"></script>
+-->
 
- <script>
-    window.onload = () => {
-      if (self === top) {
-        window.app = new App();
-      } else {
-        var LM = document.getElementById('loading-message');
-        LM.innerHTML += ' IN FRAME<br />Please visit Showdown directly.';
-        top.location = self.location;
-      }
-    }
-  </script>
+<!-- Modern entrypoint (generated from TypeScript). Ensure build produced client-main.js -->
+<script src="./js/client-main.js?v1" type="text/javascript"></script>
 
-<script src="./data/pokedex.js?"></script>
-<script src="./data/moves.js?"></script>
-<script src="./data/items.js?"></script>
-<script src="./data/abilities.js?"></script>
+<script>
+// Provide a lightweight shim for old global expectations while new client initializes
+window.app = window.app || {}; // some legacy scripts or extensions may expect this
+// Debug flags can be set before load: localStorage.ps_debug_connect = '1';
+if (localStorage.getItem('ps_debug_connect') === '1') {
+	console.debug('[index] Modern client-main.js requested at', Date.now());
+}
+</script>
 
-<script src="./data/search-index.js?"></script>
-<script src="./data/teambuilder-tables.js?"></script>
-<script src="./js/battle-dex-search.js?"></script>
-<script src="./js/search.js?"></script>
-
-<script src="./data/aliases.js?" async></script>
+<!-- Data scripts: if the modern bundle already includes dynamic loading, these may be redundant.
+	Keep them for now; remove after verifying network panel duplication. -->
+<script src="./data/pokedex.js?v1"></script>
+<script src="./data/moves.js?v1"></script>
+<script src="./data/items.js?v1"></script>
+<script src="./data/abilities.js?v1"></script>
+<script src="./data/search-index.js?v1"></script>
+<script src="./data/teambuilder-tables.js?v1"></script>
+<script src="./js/battle-dex-search.js?v1"></script>
+<script src="./js/search.js?v1"></script>
+<script src="./data/aliases.js?v1" async></script>
 <!--<script src="./js/clean-cookies.php" async></script>-->
 </body>
 </html>
