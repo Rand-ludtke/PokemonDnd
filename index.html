@@ -154,6 +154,20 @@ window.PS_SKIP_CROSSDOMAIN = true;
 					 if(localStorage.getItem('ps_debug_connect')==='1') console.debug('[PS][dynamic] Upgrading placeholder after panels loaded');
 					 window.PS.updateRoomTypes();
 				 }
+				 // Remove loading message once main menu is a real room
+				 const home = window.PS && window.PS.rooms && window.PS.rooms[''];
+				 if (home && !home.isPlaceholder) {
+					 const lm = document.getElementById('loading-message');
+					 if (lm) {
+						 lm.classList.add('hidden');
+						 // also clear text to avoid screen readers announcing stale status
+						 lm.textContent = '';
+						 lm.style.display = 'none';
+					 }
+					 // Ensure pointer events on main menu
+					 const mm = document.getElementById('mainmenu');
+					 if (mm) mm.style.pointerEvents = 'auto';
+				 }
 			 } catch(e){ console.warn('[PS][dynamic] upgrade failed', e); }
 			 return;
 		 }
