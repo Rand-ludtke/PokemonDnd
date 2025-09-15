@@ -30,13 +30,19 @@ var prefix='/showdown';
 var host='server.pokemondnd.xyz';
 var protocol='https';
 var baseURL=protocol+"://"+host+prefix;
+postMessage({type:'debug',data:'[worker] baseURL '+baseURL+' t='+Date.now()});
 
 try{
+var start=Date.now();
 
 socket=new SockJS(baseURL,[],{timeout:5*60*1000});
+postMessage({type:'debug',data:'[worker] SockJS created in '+(Date.now()-start)+'ms'});
 }catch(err){
+postMessage({type:'debug',data:'[worker] SockJS failed '+err.message});
 try{
-socket=new WebSocket(baseURL.replace('http','ws')+'/websocket');
+var wsURL=baseURL.replace('http','ws')+'/websocket';
+postMessage({type:'debug',data:'[worker] attempting WS fallback '+wsURL});
+socket=new WebSocket(wsURL);
 }catch(err2){
 postMessage({type:'error',data:'Failed to create socket: '+err2.message});
 return;
@@ -49,21 +55,28 @@ return;
 }
 
 socket.onopen=function(){
+postMessage({type:'debug',data:'[worker] onopen t='+Date.now()});
 postMessage({type:'connected'});for(var _i2=0,_queue2=
 queue;_i2<_queue2.length;_i2++){var _socket;var msg=_queue2[_i2];(_socket=socket)==null||_socket.send(msg);}
 queue=[];
 };
 
 socket.onmessage=function(e){
+
+if(typeof e.data==='string'&&e.data.length<200){
+postMessage({type:'debug',data:'[worker] frame sample '+e.data.slice(0,80)});
+}
 postMessage({type:'message',data:e.data});
 };
 
 socket.onclose=function(){
+postMessage({type:'debug',data:'[worker] onclose t='+Date.now()});
 postMessage({type:'disconnected'});
 };
 
 socket.onerror=function(err){var _socket2;
 postMessage({type:'error',data:err.message||''});
+postMessage({type:'debug',data:'[worker] onerror t='+Date.now()});
 (_socket2=socket)==null||_socket2.close();
 };
 }

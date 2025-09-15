@@ -52,6 +52,15 @@ export class PSConnection {
 		if (this.socket) return false; // must be one or the other
 		if (this.connected) return true;
 
+		// Allow forcing direct connect for debugging by setting in console:
+		// localStorage.setItem('ps_forceNoWorker','1')
+		try {
+			if (localStorage.getItem('ps_forceNoWorker') === '1') {
+				console.warn('[PS][debug] Worker disabled by ps_forceNoWorker flag');
+				return false;
+			}
+		} catch {}
+
 		if (this.worker) {
 			this.worker.postMessage({ type: 'connect', server: PS.server });
 			return true;
@@ -86,6 +95,9 @@ export class PSConnection {
 					// handleDisconnect ensures proper cleanup and also attemps to reconnect.
 					this.handleDisconnect(); // fallback
 					break;
+				case 'debug':
+					console.debug('[worker]', data);
+					break;
 				}
 			};
 
@@ -112,14 +124,19 @@ export class PSConnection {
 		const host = 'server.pokemondnd.xyz';
 		const protocol = 'https';
 		const baseURL = `${protocol}://${host}${prefix}`;
+		console.debug('[PS][debug] directConnect baseURL', baseURL, 'time', Date.now());
 		let socket: any = null;
 		try {
+			const start = performance.now();
 			socket = new SockJS(baseURL, [], { timeout: 5 * 60 * 1000 });
 			this.socket = socket; // assign for typing convenience
+			console.debug('[PS][debug] SockJS object created in', (performance.now()-start).toFixed(1),'ms');
 		} catch (err) {
 			console.warn('SockJS failed, attempting raw WebSocket fallback', err);
 			try {
-				this.socket = new WebSocket(baseURL.replace('http', 'ws') + '/websocket');
+				const wsURL = baseURL.replace('http', 'ws') + '/websocket';
+				console.debug('[PS][debug] attempting fallback WebSocket', wsURL);
+				this.socket = new WebSocket(wsURL);
 				socket = this.socket;
 			} catch (err2) {
 				console.error('Failed to create any socket', err2);
@@ -136,6 +153,7 @@ export class PSConnection {
 		PS.server.prefix = prefix;
 
 		socket.onopen = () => {
+			console.debug('[PS][debug] socket onopen fired at', Date.now());
 			console.log('\u2705 (CONNECTED)');
 			this.connected = true;
 			this.reconnectDelay = 1000;
@@ -145,10 +163,16 @@ export class PSConnection {
 		};
 
 		socket.onmessage = (ev: MessageEvent) => {
+			if (typeof ev.data === 'string' && ev.data.startsWith('a[')) {
+				// SockJS frame; keep minimal
+			} else {
+				console.debug('[PS][debug] message frame length', (''+ev.data).length);
+			}
 			PS.receive('' + ev.data);
 		};
 
 		socket.onclose = () => {
+			console.debug('[PS][debug] socket onclose fired at', Date.now());
 			console.log('\u274C (DISCONNECTED)');
 			this.handleDisconnect();
 			console.log('\u2705 (DISCONNECTED)');
@@ -163,6 +187,7 @@ export class PSConnection {
 		};
 
 		socket.onerror = (_ev: Event) => {
+			console.debug('[PS][debug] socket onerror fired at', Date.now());
 			PS.isOffline = true;
 			this.retryConnection();
 			PS.update();
