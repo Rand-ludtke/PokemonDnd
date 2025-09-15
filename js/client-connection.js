@@ -297,6 +297,23 @@ return;
 window.addEventListener('message',this.onMessage);
 
 if(document.location.hostname!==Config.routes.client){
+
+
+try{
+
+if(window.PS_SKIP_CROSSDOMAIN){var _Config2;
+(_Config2=Config).server||(_Config2.server=Config.defaultserver);
+this.loaded=true;
+return;
+}
+}catch(_unused5){}
+
+
+if(/pokemondnd\.xyz$/.test(Config.routes.client)){var _Config3;
+(_Config3=Config).server||(_Config3.server=Config.defaultserver);
+this.loaded=true;
+return;
+}
 var iframe=document.createElement('iframe');
 iframe.src='https://'+Config.routes.client+'/crossdomain.php?host='+
 encodeURIComponent(document.location.hostname)+
@@ -304,13 +321,13 @@ encodeURIComponent(document.location.hostname)+
 '&protocol='+encodeURIComponent(document.location.protocol);
 iframe.style.display='none';
 document.body.appendChild(iframe);
-}else{var _Config2;
-(_Config2=Config).server||(_Config2.server=Config.defaultserver);
+}else{var _Config4;
+(_Config4=Config).server||(_Config4.server=Config.defaultserver);
 
 var _iframe=document.createElement('iframe');
 _iframe.src="https://"+Config.routes.client+"/crossprotocol.html?v1.2";
 _iframe.style.display='none';
-try{document.body.appendChild(_iframe);}catch(_unused5){}
+try{document.body.appendChild(_iframe);}catch(_unused6){}
 setTimeout(function(){
 
 
@@ -425,12 +442,12 @@ return new Promise(function(resolve){
 PSStorage.requests[idx]=resolve;
 PSStorage.postCrossOriginMessage((type==='GET'?'R':'S')+JSON.stringify([uri,data,idx,'text']));
 });
-};return PSStorage;}();_PSStorage=PSStorage;PSStorage.frame=null;PSStorage.requests=null;PSStorage.requestCount=0;PSStorage.origin="https://"+Config.routes.client;PSStorage.loader=void 0;PSStorage.loaded=false;PSStorage.onMessage=function(e){if(e.origin!==_PSStorage.origin)return;_PSStorage.frame=e.source;var data=e.data;switch(data.charAt(0)){case'c':Config.server=JSON.parse(data.substr(1));if(Config.server.registered&&Config.server.id!=='showdown'&&Config.server.id!=='smogtours'){var link=document.createElement('link');link.rel='stylesheet';link.href="//"+Config.routes.client+"/customcss.php?server="+encodeURIComponent(Config.server.id);document.head.appendChild(link);}Object.assign(PS.server,Config.server);break;case'p':var newData=JSON.parse(data.substr(1));if(newData)PS.prefs.load(newData,true);PS.prefs.save=function(){var prefData=JSON.stringify(PS.prefs.storage);_PSStorage.postCrossOriginMessage('P'+prefData);try{localStorage.setItem('showdown_prefs',prefData);}catch(_unused6){}};PS.prefs.update(null);break;case't':if(window.nodewebkit)return;var oldTeams;if(PS.teams.list.length){oldTeams=PS.teams.list;}PS.teams.unpackAll(data.substr(1));PS.teams.save=function(){var packedTeams=PS.teams.packAll(PS.teams.list);_PSStorage.postCrossOriginMessage('T'+packedTeams);if(document.location.hostname===Config.routes.client){try{localStorage.setItem('showdown_teams_local',packedTeams);}catch(_unused7){}}PS.teams.update('team');};if(oldTeams){PS.teams.list=PS.teams.list.concat(oldTeams);PS.teams.save();localStorage.removeItem('showdown_teams');}if(data==='tnull'&&!PS.teams.list.length){PS.teams.unpackAll(localStorage.getItem('showdown_teams_local'));}break;case'a':if(data==='a0'){PS.alert("Your browser doesn't support third-party cookies. Some things might not work correctly.");}if(!window.nodewebkit){try{_PSStorage.frame.postMessage("",_PSStorage.origin);}catch(_unused8){return;}_PSStorage.requests={};}_PSStorage.loaded=true;_PSStorage.loader==null||_PSStorage.loader();_PSStorage.loader=undefined;break;case'r':var reqData=JSON.parse(data.slice(1));var idx=reqData[0];if(_PSStorage.requests[idx]){_PSStorage.requests[idx](reqData[1]);delete _PSStorage.requests[idx];}break;}};PSStorage.
+};return PSStorage;}();_PSStorage=PSStorage;PSStorage.frame=null;PSStorage.requests=null;PSStorage.requestCount=0;PSStorage.origin="https://"+Config.routes.client;PSStorage.loader=void 0;PSStorage.loaded=false;PSStorage.onMessage=function(e){if(e.origin!==_PSStorage.origin)return;_PSStorage.frame=e.source;var data=e.data;switch(data.charAt(0)){case'c':Config.server=JSON.parse(data.substr(1));if(Config.server.registered&&Config.server.id!=='showdown'&&Config.server.id!=='smogtours'){var link=document.createElement('link');link.rel='stylesheet';link.href="//"+Config.routes.client+"/customcss.php?server="+encodeURIComponent(Config.server.id);document.head.appendChild(link);}Object.assign(PS.server,Config.server);break;case'p':var newData=JSON.parse(data.substr(1));if(newData)PS.prefs.load(newData,true);PS.prefs.save=function(){var prefData=JSON.stringify(PS.prefs.storage);_PSStorage.postCrossOriginMessage('P'+prefData);try{localStorage.setItem('showdown_prefs',prefData);}catch(_unused7){}};PS.prefs.update(null);break;case't':if(window.nodewebkit)return;var oldTeams;if(PS.teams.list.length){oldTeams=PS.teams.list;}PS.teams.unpackAll(data.substr(1));PS.teams.save=function(){var packedTeams=PS.teams.packAll(PS.teams.list);_PSStorage.postCrossOriginMessage('T'+packedTeams);if(document.location.hostname===Config.routes.client){try{localStorage.setItem('showdown_teams_local',packedTeams);}catch(_unused8){}}PS.teams.update('team');};if(oldTeams){PS.teams.list=PS.teams.list.concat(oldTeams);PS.teams.save();localStorage.removeItem('showdown_teams');}if(data==='tnull'&&!PS.teams.list.length){PS.teams.unpackAll(localStorage.getItem('showdown_teams_local'));}break;case'a':if(data==='a0'){PS.alert("Your browser doesn't support third-party cookies. Some things might not work correctly.");}if(!window.nodewebkit){try{_PSStorage.frame.postMessage("",_PSStorage.origin);}catch(_unused9){return;}_PSStorage.requests={};}_PSStorage.loaded=true;_PSStorage.loader==null||_PSStorage.loader();_PSStorage.loader=undefined;break;case'r':var reqData=JSON.parse(data.slice(1));var idx=reqData[0];if(_PSStorage.requests[idx]){_PSStorage.requests[idx](reqData[1]);delete _PSStorage.requests[idx];}break;}};PSStorage.
 postCrossOriginMessage=function(data){
 try{
 
 return _PSStorage.frame.postMessage(data,_PSStorage.origin);
-}catch(_unused9){
+}catch(_unused10){
 }
 return false;
 };
@@ -486,7 +503,7 @@ _this6.statusCode=statusCode;
 _this6.body=body;
 try{
 Error.captureStackTrace(_this6,HttpError);
-}catch(_unused10){}return _this6;
+}catch(_unused11){}return _this6;
 }_inheritsLoose(HttpError,_Error);return HttpError;}(_wrapNativeSuper(Error));var
 
 NetRequest=function(){

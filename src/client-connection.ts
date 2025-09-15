@@ -297,6 +297,23 @@ export class PSStorage {
 		window.addEventListener('message', this.onMessage);
 
 		if (document.location.hostname !== Config.routes.client) {
+			// Custom deployment: allow skipping crossdomain.php iframe if unavailable.
+			// Set window.PS_SKIP_CROSSDOMAIN = true in index.html to trigger this fast path.
+			try {
+				// @ts-ignore
+				if ((window as any).PS_SKIP_CROSSDOMAIN) {
+					Config.server ||= Config.defaultserver;
+					this.loaded = true;
+					return;
+				}
+			} catch {}
+			// If the configured client route points to the same host as the battle server domain
+			// (e.g. server.pokemondnd.xyz) but crossdomain.php is absent, we also silently skip.
+			if ((/pokemondnd\.xyz$/).test(Config.routes.client)) {
+				Config.server ||= Config.defaultserver;
+				this.loaded = true;
+				return;
+			}
 			const iframe = document.createElement('iframe');
 			iframe.src = 'https://' + Config.routes.client + '/crossdomain.php?host=' +
 				encodeURIComponent(document.location.hostname) +
