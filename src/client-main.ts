@@ -2748,8 +2748,30 @@ export const PS = new class extends PSModel {
 // window.PS.connection etc reflect the real runtime object. This is important for
 // custom deployments where a stub was injected before bundles finished loading.
 try {
+	const hadStub = !!(window as any).PS && !(window as any).PS.connection && !(window as any).PS.update?.toString?.().includes('[native code]');
 	(window as any).PS = PS;
 	if (localStorage.getItem('ps_debug_connect') === '1') {
-		console.debug('[PS][debug] global PS bound at', Date.now());
+		console.debug('[PS][debug] global PS bound at', Date.now(), 'hadStub=', hadStub);
 	}
+	// Force an initial connect if one has not been started (safety for custom HTML ordering)
+	setTimeout(() => {
+		try {
+			if (!(PS as any).connection) {
+				if (localStorage.getItem('ps_debug_connect') === '1') console.debug('[PS][debug] invoking PSConnection.connect bootstrap');
+				// Use static connect method to instantiate and assign connection
+				(PSConnection as any).connect();
+			}
+		} catch (e) {
+			console.warn('[PS][debug] failed to invoke static connect()', e);
+		}
+	}, 50);
 } catch {}
+
+// Additional failsafe: if connection still missing after a while, log diagnostic
+setTimeout(() => {
+	try {
+		if (!(window as any).PS?.connection) {
+			console.warn('[PS][debug] No PS.connection after 2s. Keys on PS:', Object.keys((window as any).PS || {}));
+		}
+	} catch {}
+}, 2000);

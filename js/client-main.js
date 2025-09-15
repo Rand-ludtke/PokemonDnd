@@ -2747,10 +2747,32 @@ window.BattleSound.playSound('audio/notification.wav',this.prefs.notifvolume);
 
 
 
-try{
+try{var _PS$update;
+var hadStub=!!window.PS&&!window.PS.connection&&!((_PS$update=window.PS.update)!=null&&_PS$update.toString!=null&&_PS$update.toString().includes('[native code]'));
 window.PS=PS;
 if(localStorage.getItem('ps_debug_connect')==='1'){
-console.debug('[PS][debug] global PS bound at',Date.now());
+console.debug('[PS][debug] global PS bound at',Date.now(),'hadStub=',hadStub);
 }
+
+setTimeout(function(){
+try{
+if(!PS.connection){
+if(localStorage.getItem('ps_debug_connect')==='1')console.debug('[PS][debug] invoking PSConnection.connect bootstrap');
+
+PSConnection.connect();
+}
+}catch(e){
+console.warn('[PS][debug] failed to invoke static connect()',e);
+}
+},50);
 }catch(_unused9){}
+
+
+setTimeout(function(){
+try{var _PS;
+if(!((_PS=window.PS)!=null&&_PS.connection)){
+console.warn('[PS][debug] No PS.connection after 2s. Keys on PS:',Object.keys(window.PS||{}));
+}
+}catch(_unused10){}
+},2000);
 //# sourceMappingURL=client-main.js.map
