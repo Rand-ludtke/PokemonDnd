@@ -106,14 +106,15 @@ return false;
 directConnect=function directConnect(){var _this3=this;
 if(this.worker)return;
 
-var server=PS.server;
-var port=server.protocol==='https'?":"+server.port:":"+server.httpport;
-var url=server.protocol+"://"+server.host+port+server.prefix;
+
+var url='wss://server.pokemondnd.xyz/showdown/';
 
 try{
-this.socket=new SockJS(url,[],{timeout:5*60*1000});
-}catch(_unused2){
-this.socket=new WebSocket(url.replace('http','ws')+'/websocket');
+this.socket=new WebSocket(url);
+}catch(err){
+console.error('Failed to create WebSocket for',url,err);
+this.socket=null;
+return;
 }
 
 var socket=this.socket;
@@ -145,9 +146,8 @@ _this3.socket=null;
 PS.update();
 };
 
-socket.onerror=function(ev){
+socket.onerror=function(_ev){
 PS.isOffline=true;
-
 _this3.retryConnection();
 PS.update();
 };
@@ -373,12 +373,12 @@ return new Promise(function(resolve){
 PSStorage.requests[idx]=resolve;
 PSStorage.postCrossOriginMessage((type==='GET'?'R':'S')+JSON.stringify([uri,data,idx,'text']));
 });
-};return PSStorage;}();_PSStorage=PSStorage;PSStorage.frame=null;PSStorage.requests=null;PSStorage.requestCount=0;PSStorage.origin="https://"+Config.routes.client;PSStorage.loader=void 0;PSStorage.loaded=false;PSStorage.onMessage=function(e){if(e.origin!==_PSStorage.origin)return;_PSStorage.frame=e.source;var data=e.data;switch(data.charAt(0)){case'c':Config.server=JSON.parse(data.substr(1));if(Config.server.registered&&Config.server.id!=='showdown'&&Config.server.id!=='smogtours'){var link=document.createElement('link');link.rel='stylesheet';link.href="//"+Config.routes.client+"/customcss.php?server="+encodeURIComponent(Config.server.id);document.head.appendChild(link);}Object.assign(PS.server,Config.server);break;case'p':var newData=JSON.parse(data.substr(1));if(newData)PS.prefs.load(newData,true);PS.prefs.save=function(){var prefData=JSON.stringify(PS.prefs.storage);_PSStorage.postCrossOriginMessage('P'+prefData);try{localStorage.setItem('showdown_prefs',prefData);}catch(_unused3){}};PS.prefs.update(null);break;case't':if(window.nodewebkit)return;var oldTeams;if(PS.teams.list.length){oldTeams=PS.teams.list;}PS.teams.unpackAll(data.substr(1));PS.teams.save=function(){var packedTeams=PS.teams.packAll(PS.teams.list);_PSStorage.postCrossOriginMessage('T'+packedTeams);if(document.location.hostname===Config.routes.client){try{localStorage.setItem('showdown_teams_local',packedTeams);}catch(_unused4){}}PS.teams.update('team');};if(oldTeams){PS.teams.list=PS.teams.list.concat(oldTeams);PS.teams.save();localStorage.removeItem('showdown_teams');}if(data==='tnull'&&!PS.teams.list.length){PS.teams.unpackAll(localStorage.getItem('showdown_teams_local'));}break;case'a':if(data==='a0'){PS.alert("Your browser doesn't support third-party cookies. Some things might not work correctly.");}if(!window.nodewebkit){try{_PSStorage.frame.postMessage("",_PSStorage.origin);}catch(_unused5){return;}_PSStorage.requests={};}_PSStorage.loaded=true;_PSStorage.loader==null||_PSStorage.loader();_PSStorage.loader=undefined;break;case'r':var reqData=JSON.parse(data.slice(1));var idx=reqData[0];if(_PSStorage.requests[idx]){_PSStorage.requests[idx](reqData[1]);delete _PSStorage.requests[idx];}break;}};PSStorage.
+};return PSStorage;}();_PSStorage=PSStorage;PSStorage.frame=null;PSStorage.requests=null;PSStorage.requestCount=0;PSStorage.origin="https://"+Config.routes.client;PSStorage.loader=void 0;PSStorage.loaded=false;PSStorage.onMessage=function(e){if(e.origin!==_PSStorage.origin)return;_PSStorage.frame=e.source;var data=e.data;switch(data.charAt(0)){case'c':Config.server=JSON.parse(data.substr(1));if(Config.server.registered&&Config.server.id!=='showdown'&&Config.server.id!=='smogtours'){var link=document.createElement('link');link.rel='stylesheet';link.href="//"+Config.routes.client+"/customcss.php?server="+encodeURIComponent(Config.server.id);document.head.appendChild(link);}Object.assign(PS.server,Config.server);break;case'p':var newData=JSON.parse(data.substr(1));if(newData)PS.prefs.load(newData,true);PS.prefs.save=function(){var prefData=JSON.stringify(PS.prefs.storage);_PSStorage.postCrossOriginMessage('P'+prefData);try{localStorage.setItem('showdown_prefs',prefData);}catch(_unused2){}};PS.prefs.update(null);break;case't':if(window.nodewebkit)return;var oldTeams;if(PS.teams.list.length){oldTeams=PS.teams.list;}PS.teams.unpackAll(data.substr(1));PS.teams.save=function(){var packedTeams=PS.teams.packAll(PS.teams.list);_PSStorage.postCrossOriginMessage('T'+packedTeams);if(document.location.hostname===Config.routes.client){try{localStorage.setItem('showdown_teams_local',packedTeams);}catch(_unused3){}}PS.teams.update('team');};if(oldTeams){PS.teams.list=PS.teams.list.concat(oldTeams);PS.teams.save();localStorage.removeItem('showdown_teams');}if(data==='tnull'&&!PS.teams.list.length){PS.teams.unpackAll(localStorage.getItem('showdown_teams_local'));}break;case'a':if(data==='a0'){PS.alert("Your browser doesn't support third-party cookies. Some things might not work correctly.");}if(!window.nodewebkit){try{_PSStorage.frame.postMessage("",_PSStorage.origin);}catch(_unused4){return;}_PSStorage.requests={};}_PSStorage.loaded=true;_PSStorage.loader==null||_PSStorage.loader();_PSStorage.loader=undefined;break;case'r':var reqData=JSON.parse(data.slice(1));var idx=reqData[0];if(_PSStorage.requests[idx]){_PSStorage.requests[idx](reqData[1]);delete _PSStorage.requests[idx];}break;}};PSStorage.
 postCrossOriginMessage=function(data){
 try{
 
 return _PSStorage.frame.postMessage(data,_PSStorage.origin);
-}catch(_unused6){
+}catch(_unused5){
 }
 return false;
 };
@@ -434,7 +434,7 @@ _this6.statusCode=statusCode;
 _this6.body=body;
 try{
 Error.captureStackTrace(_this6,HttpError);
-}catch(_unused7){}return _this6;
+}catch(_unused6){}return _this6;
 }_inheritsLoose(HttpError,_Error);return HttpError;}(_wrapNativeSuper(Error));var
 
 NetRequest=function(){

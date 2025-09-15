@@ -106,14 +106,15 @@ export class PSConnection {
 	directConnect() {
 		if (this.worker) return; // must be one or the other
 
-		const server = PS.server;
-		const port = server.protocol === 'https' ? `:${server.port}` : `:${server.httpport!}`;
-		const url = `${server.protocol}://${server.host}${port}${server.prefix}`;
+		// Force connection to custom backend regardless of Config/PS.server
+		const url = 'wss://server.pokemondnd.xyz/showdown/';
 
 		try {
-			this.socket = new SockJS(url, [], { timeout: 5 * 60 * 1000 });
-		} catch {
-			this.socket = new WebSocket(url.replace('http', 'ws') + '/websocket');
+			this.socket = new WebSocket(url);
+		} catch (err) {
+			console.error('Failed to create WebSocket for', url, err);
+			this.socket = null;
+			return;
 		}
 
 		const socket = this.socket!;
@@ -145,9 +146,8 @@ export class PSConnection {
 			PS.update();
 		};
 
-		socket.onerror = (ev: Event) => {
+		socket.onerror = (_ev: Event) => {
 			PS.isOffline = true;
-			// no useful info to print from the event
 			this.retryConnection();
 			PS.update();
 		};
