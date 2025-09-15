@@ -54,6 +54,15 @@ export interface PSConfig {
 }
 export declare const Config: PSConfig;
 
+// Instrumentation: early execution marker (will appear once if this module loads)
+try {
+	(window as any)._psClientMainLoadedAt = Date.now();
+	// Only log if debug flag present to avoid noise in prod
+	if (localStorage.getItem('ps_debug_connect') === '1') {
+		console.debug('[PS][debug] client-main module loaded at', (window as any)._psClientMainLoadedAt);
+	}
+} catch {}
+
 /**********************************************************************
  * Prefs
  *********************************************************************/

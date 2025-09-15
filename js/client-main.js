@@ -55,6 +55,15 @@
 
 
 
+try{
+window._psClientMainLoadedAt=Date.now();
+
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][debug] client-main module loaded at',window._psClientMainLoadedAt);
+}
+}catch(_unused){}
+
+
 
 
 
@@ -182,7 +191,7 @@ if(window.localStorage){
 _this.storageEngine='localStorage';
 _this.load(JSON.parse(localStorage.getItem('showdown_prefs'))||{},true);
 }
-}catch(_unused){}return _this;
+}catch(_unused2){}return _this;
 }_inheritsLoose(PSPrefs,_PSStreamModel);var _proto=PSPrefs.prototype;_proto.
 
 
@@ -369,7 +378,7 @@ function PSTeams(){var _this2;
 _this2=_PSStreamModel2.call(this)||this;_this2.usesLocalLadder=false;_this2.list=[];_this2.byKey={};_this2.deletedTeams=[];_this2.uploading=null;
 try{
 _this2.unpackAll(localStorage.getItem('showdown_teams'));
-}catch(_unused2){}return _this2;
+}catch(_unused3){}return _this2;
 }_inheritsLoose(PSTeams,_PSStreamModel2);var _proto2=PSTeams.prototype;_proto2.
 teambuilderFormat=function teambuilderFormat(format){
 var ruleSepIndex=format.indexOf('@@@');
@@ -446,7 +455,7 @@ team.name+"|"+team.packedTeam);}
 save=function save(){
 try{
 localStorage.setItem('showdown_teams',this.packAll(this.list));
-}catch(_unused3){}
+}catch(_unused4){}
 this.update('team');
 };_proto2.
 unpackLine=function unpackLine(line){
@@ -697,7 +706,7 @@ if(special.needsGoogle){
 try{
 
 gapi.auth2.getAuthInstance().signOut();
-}catch(_unused4){}
+}catch(_unused5){}
 }
 _this6.updateLogin(Object.assign({
 name:name,
@@ -1681,7 +1690,7 @@ this.errorReply("This is a PS system command; do not use it.");
 }
 });_this7.
 clientCommands=null;_this7.
-currentElement=null;_this7.id=options.id;_this7.title=options.title||_this7.title||_this7.id;if(options.type)_this7.type=options.type;if(options.location)_this7.location=options.location;if(options.parentElem)_this7.parentElem=options.parentElem;if(options.parentRoomid)_this7.parentRoomid=options.parentRoomid;if(_this7.location!=='popup'&&_this7.location!=='semimodal-popup')_this7.parentElem=null;if(options.rightPopup)_this7.rightPopup=true;if(options.connected)_this7.connected=options.connected;if(options.backlog)_this7.backlog=options.backlog;_this7.noURL=options.noURL||false;_this7.args=options.args||null;return _this7;}_inheritsLoose(PSRoom,_PSStreamModel4);var _proto5=PSRoom.prototype;_proto5.getParent=function getParent(){if(this.parentRoomid)return PS.rooms[this.parentRoomid]||null;return null;};_proto5.notify=function notify(options){var _this9=this;var desktopNotification=null;var roomIsFocused=(document.hasFocus==null?void 0:document.hasFocus())&&PS.isVisible(this);if(roomIsFocused&&!options.noAutoDismiss)return;if(!roomIsFocused){PS.playNotificationSound();try{desktopNotification=new Notification(options.title,{body:options.body});if(desktopNotification){desktopNotification.onclick=function(){window.focus();PS.focusRoom(_this9.id);};if(PS.prefs.temporarynotifications){setTimeout(function(){var _desktopNotification;(_desktopNotification=desktopNotification)==null||_desktopNotification.close();},5000);}}}catch(_unused5){}}if(options.noAutoDismiss&&!options.id){throw new Error("Must specify id for manual dismissing");}if(options.id){this.notifications=this.notifications.filter(function(notification){return notification.id!==options.id;});}this.notifications.push({title:options.title,body:options.body,id:options.id||'',noAutoDismiss:options.noAutoDismiss||false,notification:desktopNotification});PS.update();};_proto5.subtleNotify=function subtleNotify(){var _PS$prefs$logtimes,_room$lastMessage;if(PS.isVisible(this))return;var room=PS.rooms[this.id];var lastSeenTimestamp=((_PS$prefs$logtimes=PS.prefs.logtimes)==null||(_PS$prefs$logtimes=_PS$prefs$logtimes[PS.server.id])==null?void 0:_PS$prefs$logtimes[this.id])||0;var lastMessageTime=+(((_room$lastMessage=room.lastMessage)==null?void 0:_room$lastMessage[1])||0);if(lastMessageTime-room.timeOffset<=lastSeenTimestamp)return;this.isSubtleNotifying=true;PS.update();};_proto5.dismissNotificationAt=function dismissNotificationAt(i){try{var _this$notifications$i;(_this$notifications$i=this.notifications[i].notification)==null||_this$notifications$i.close();}catch(_unused6){}this.notifications.splice(i,1);};_proto5.dismissNotification=function dismissNotification(id){var index=this.notifications.findIndex(function(n){return n.id===id;});if(index!==-1){this.dismissNotificationAt(index);}PS.update();};_proto5.autoDismissNotifications=function autoDismissNotifications(){var room=PS.rooms[this.id];if(room.lastMessageTime){var lastMessageDates=PS.prefs.logtimes||{};if(!lastMessageDates[PS.server.id])lastMessageDates[PS.server.id]={};lastMessageDates[PS.server.id][room.id]=room.lastMessageTime||0;PS.prefs.set('logtimes',lastMessageDates);}for(var i=this.notifications.length-1;i>=0;i--){if(!this.notifications[i].noAutoDismiss){this.dismissNotificationAt(i);}}this.isSubtleNotifying=false;};_proto5.connect=function connect(){throw new Error("This room is not designed to connect to a server room");};_proto5.handleReconnect=function handleReconnect(msg){};_proto5.receiveLine=function receiveLine(args){switch(args[0]){case'title':{this.title=args[1];PS.update();break;}case'notify':{var title=args[1],body=args[2],toHighlight=args[3];if(toHighlight&&!ChatRoom.getHighlight(toHighlight,this.id))break;this.notify({title:title,body:body});break;}case'tempnotify':{var id=args[1],_title=args[2],_body=args[3],_toHighlight=args[4];if(_toHighlight&&!ChatRoom.getHighlight(_toHighlight,this.id))break;this.notify({title:_title,body:_body,id:id});break;}case'tempnotifyoff':{var _id=args[1];this.dismissNotification(_id);break;}default:{if(this.canConnect){this.update(args);}else{throw new Error("This room is not designed to receive messages");}}}};_proto5.add=function add(line,ifChat){if(this.type!=='chat'&&this.type!=='battle'){if(!ifChat){var _PS$rooms;PS.mainmenu.handlePM(PS.user.userid,PS.user.userid);(_PS$rooms=PS.rooms['dm-'])==null||_PS$rooms.receiveLine(BattleTextParser.parseLine(line));}}else{this.receiveLine(BattleTextParser.parseLine(line));}};_proto5.errorReply=function errorReply(message){var element=arguments.length>1&&arguments[1]!==undefined?arguments[1]:this.currentElement;if((element==null?void 0:element.tagName)==='BUTTON'){PS.alert(message,{parentElem:element});}else{this.add("|error|"+message);}};_proto5.parseClientCommands=function parseClientCommands(commands){var parsedCommands={};for(var cmd in commands){var names=cmd.split(',').map(function(name){return name.trim();});for(var _i23=0;_i23<names.length;_i23++){var name=names[_i23];if(name.includes(' '))throw new Error("Client command names cannot contain spaces: "+name);parsedCommands[name]=commands[cmd];}}return parsedCommands;};_proto5.
+currentElement=null;_this7.id=options.id;_this7.title=options.title||_this7.title||_this7.id;if(options.type)_this7.type=options.type;if(options.location)_this7.location=options.location;if(options.parentElem)_this7.parentElem=options.parentElem;if(options.parentRoomid)_this7.parentRoomid=options.parentRoomid;if(_this7.location!=='popup'&&_this7.location!=='semimodal-popup')_this7.parentElem=null;if(options.rightPopup)_this7.rightPopup=true;if(options.connected)_this7.connected=options.connected;if(options.backlog)_this7.backlog=options.backlog;_this7.noURL=options.noURL||false;_this7.args=options.args||null;return _this7;}_inheritsLoose(PSRoom,_PSStreamModel4);var _proto5=PSRoom.prototype;_proto5.getParent=function getParent(){if(this.parentRoomid)return PS.rooms[this.parentRoomid]||null;return null;};_proto5.notify=function notify(options){var _this9=this;var desktopNotification=null;var roomIsFocused=(document.hasFocus==null?void 0:document.hasFocus())&&PS.isVisible(this);if(roomIsFocused&&!options.noAutoDismiss)return;if(!roomIsFocused){PS.playNotificationSound();try{desktopNotification=new Notification(options.title,{body:options.body});if(desktopNotification){desktopNotification.onclick=function(){window.focus();PS.focusRoom(_this9.id);};if(PS.prefs.temporarynotifications){setTimeout(function(){var _desktopNotification;(_desktopNotification=desktopNotification)==null||_desktopNotification.close();},5000);}}}catch(_unused6){}}if(options.noAutoDismiss&&!options.id){throw new Error("Must specify id for manual dismissing");}if(options.id){this.notifications=this.notifications.filter(function(notification){return notification.id!==options.id;});}this.notifications.push({title:options.title,body:options.body,id:options.id||'',noAutoDismiss:options.noAutoDismiss||false,notification:desktopNotification});PS.update();};_proto5.subtleNotify=function subtleNotify(){var _PS$prefs$logtimes,_room$lastMessage;if(PS.isVisible(this))return;var room=PS.rooms[this.id];var lastSeenTimestamp=((_PS$prefs$logtimes=PS.prefs.logtimes)==null||(_PS$prefs$logtimes=_PS$prefs$logtimes[PS.server.id])==null?void 0:_PS$prefs$logtimes[this.id])||0;var lastMessageTime=+(((_room$lastMessage=room.lastMessage)==null?void 0:_room$lastMessage[1])||0);if(lastMessageTime-room.timeOffset<=lastSeenTimestamp)return;this.isSubtleNotifying=true;PS.update();};_proto5.dismissNotificationAt=function dismissNotificationAt(i){try{var _this$notifications$i;(_this$notifications$i=this.notifications[i].notification)==null||_this$notifications$i.close();}catch(_unused7){}this.notifications.splice(i,1);};_proto5.dismissNotification=function dismissNotification(id){var index=this.notifications.findIndex(function(n){return n.id===id;});if(index!==-1){this.dismissNotificationAt(index);}PS.update();};_proto5.autoDismissNotifications=function autoDismissNotifications(){var room=PS.rooms[this.id];if(room.lastMessageTime){var lastMessageDates=PS.prefs.logtimes||{};if(!lastMessageDates[PS.server.id])lastMessageDates[PS.server.id]={};lastMessageDates[PS.server.id][room.id]=room.lastMessageTime||0;PS.prefs.set('logtimes',lastMessageDates);}for(var i=this.notifications.length-1;i>=0;i--){if(!this.notifications[i].noAutoDismiss){this.dismissNotificationAt(i);}}this.isSubtleNotifying=false;};_proto5.connect=function connect(){throw new Error("This room is not designed to connect to a server room");};_proto5.handleReconnect=function handleReconnect(msg){};_proto5.receiveLine=function receiveLine(args){switch(args[0]){case'title':{this.title=args[1];PS.update();break;}case'notify':{var title=args[1],body=args[2],toHighlight=args[3];if(toHighlight&&!ChatRoom.getHighlight(toHighlight,this.id))break;this.notify({title:title,body:body});break;}case'tempnotify':{var id=args[1],_title=args[2],_body=args[3],_toHighlight=args[4];if(_toHighlight&&!ChatRoom.getHighlight(_toHighlight,this.id))break;this.notify({title:_title,body:_body,id:id});break;}case'tempnotifyoff':{var _id=args[1];this.dismissNotification(_id);break;}default:{if(this.canConnect){this.update(args);}else{throw new Error("This room is not designed to receive messages");}}}};_proto5.add=function add(line,ifChat){if(this.type!=='chat'&&this.type!=='battle'){if(!ifChat){var _PS$rooms;PS.mainmenu.handlePM(PS.user.userid,PS.user.userid);(_PS$rooms=PS.rooms['dm-'])==null||_PS$rooms.receiveLine(BattleTextParser.parseLine(line));}}else{this.receiveLine(BattleTextParser.parseLine(line));}};_proto5.errorReply=function errorReply(message){var element=arguments.length>1&&arguments[1]!==undefined?arguments[1]:this.currentElement;if((element==null?void 0:element.tagName)==='BUTTON'){PS.alert(message,{parentElem:element});}else{this.add("|error|"+message);}};_proto5.parseClientCommands=function parseClientCommands(commands){var parsedCommands={};for(var cmd in commands){var names=cmd.split(',').map(function(name){return name.trim();});for(var _i23=0;_i23<names.length;_i23++){var name=names[_i23];if(name.includes(' '))throw new Error("Client command names cannot contain spaces: "+name);parsedCommands[name]=commands[cmd];}}return parsedCommands;};_proto5.
 
 
 
@@ -2726,7 +2735,7 @@ window.webkitNotifications.requestPermission();
 }else if(window.Notification){
 Notification.requestPermission==null||Notification.requestPermission(function(permission){});
 }
-}catch(_unused7){}
+}catch(_unused8){}
 };_proto7.
 playNotificationSound=function playNotificationSound(){
 if(window.BattleSound&&!this.prefs.mute){
