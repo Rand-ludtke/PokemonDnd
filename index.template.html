@@ -73,26 +73,18 @@ https://psim.us/dev
 	LM.innerHTML += ' DONE<br />Loading libraries...';
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
+<!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
 <script src="./config/config.js?v1"></script>
-<script src="./js/lib/jquery-2.2.4.min.js"></script>
-<script src="./js/lib/jquery-cookie.js"></script>
-<script src="./js/lib/autoresize.jquery.min.js?v1"></script>
-<script src="./js/battle-sound.js?v1"></script>
-<script src="./js/lib/html-css-sanitizer-minified.js?v1"></script>
-<script src="./js/lib/lodash.core.js?v1"></script>
-<script src="./js/lib/backbone.js?v1"></script>
-<script src="./js/lib/d3.v3.min.js"></script>
+<script src="./js/lib/sockjs-1.4.0-nwjsfix.min.js"></script>
+<!-- Modern bundle supplies its own module system; legacy libs (jquery, lodash, backbone, d3, sanitizer) omitted. -->
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading data...';
 </script>
 
+<!-- Core compiled data bundle (contains battle dex/log/parser pieces) -->
 <script src="./js/battledata.js?v1"></script>
-<script src="./js/storage.js?v1"></script>
-<!--<script src="./data/pokedex-mini.js?v1"></script>-->
-<script src="./data/typechart.js?v1"></script>
-<script src="./js/battle.js?v1"></script>
-<script src="./js/lib/sockjs-1.4.0-nwjsfix.min.js"></script>
+<!-- Omitted storage.js and battle.js (legacy global-dependent) -->
 <script src="./js/lib/color-thief.min.js"></script>
 
 <script>
@@ -128,17 +120,13 @@ if (localStorage.getItem('ps_debug_connect') === '1') {
 }
 </script>
 
-<!-- Data scripts: if the modern bundle already includes dynamic loading, these may be redundant.
-	Keep them for now; remove after verifying network panel duplication. -->
+<!-- Retained only essential data; remove if duplicated by modern bundle after validation -->
 <script src="./data/pokedex.js?v1"></script>
 <script src="./data/moves.js?v1"></script>
 <script src="./data/items.js?v1"></script>
 <script src="./data/abilities.js?v1"></script>
-<script src="./data/search-index.js?v1"></script>
 <script src="./data/teambuilder-tables.js?v1"></script>
-<script src="./js/battle-dex-search.js?v1"></script>
-<script src="./js/search.js?v1"></script>
-<script src="./data/aliases.js?v1" async></script>
+<!-- Removed search-index.js, battle-dex-search.js, search.js, aliases.js (legacy search stack) -->
 <!--<script src="./js/clean-cookies.php" async></script>-->
 </body>
 </html>
