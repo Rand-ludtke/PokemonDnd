@@ -92,21 +92,6 @@ window.PS_SKIP_CROSSDOMAIN = true;
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
 <script src="./js/client-core.js?v1"></script>
 <script src="./js/client-connection.js?v1"></script>
-<!-- Panel bundles (register room/panel types before client-main initializes) -->
-<script src="./js/panels.js?v1"></script>
-<script src="./js/panel-mainmenu.js?v1"></script>
-<script src="./js/panel-rooms.js?v1"></script>
-<script src="./js/panel-chat.js?v1"></script>
-<script src="./js/panel-chat-tournament.js?v1"></script>
-<script src="./js/panel-battle.js?v1"></script>
-<script src="./js/panel-teambuilder.js?v1"></script>
-<script src="./js/panel-teambuilder-team.js?v1"></script>
-<script src="./js/panel-teamdropdown.js?v1"></script>
-<script src="./js/panel-ladder.js?v1"></script>
-<script src="./js/panel-page.js?v1"></script>
-<script src="./js/panel-popups.js?v1"></script>
-<script src="./js/panel-resources.js?v1"></script>
-<script src="./js/panel-topbar.js?v1"></script>
 <script>
 // Poll for connection state to update loading UI (temporary until mainmenu renders)
 (function pollConnected(){
@@ -152,19 +137,38 @@ window.PS_SKIP_CROSSDOMAIN = true;
 
 <!-- Modern entrypoint (generated from TypeScript). Depends on client-core & client-connection above. -->
 <script src="./js/client-main.js?v1" type="text/javascript" onload="(function(){try{var lm=document.getElementById('loading-message'); if(lm && !/Connected/.test(lm.innerHTML)) lm.innerHTML='Client loaded. Connecting...';}catch(e){}})();"></script>
+<!-- Panel bundles (must load AFTER client-main so PSRoom/preact globals exist) -->
+<script src="./js/panels.js?v1"></script>
+<script src="./js/panel-mainmenu.js?v1"></script>
+<script src="./js/panel-rooms.js?v1"></script>
+<script src="./js/panel-chat.js?v1"></script>
+<script src="./js/panel-chat-tournament.js?v1"></script>
+<script src="./js/panel-battle.js?v1"></script>
+<script src="./js/panel-teambuilder.js?v1"></script>
+<script src="./js/panel-teambuilder-team.js?v1"></script>
+<script src="./js/panel-teamdropdown.js?v1"></script>
+<script src="./js/panel-ladder.js?v1"></script>
+<script src="./js/panel-page.js?v1"></script>
+<script src="./js/panel-popups.js?v1"></script>
+<script src="./js/panel-resources.js?v1"></script>
+<script src="./js/panel-topbar.js?v1"></script>
 
 <script>
 // Fallback: if room types failed to register before client-main ran (rare), try upgrading placeholder.
 setTimeout(function(){
  try {
-	 if (window.PS && window.PS.roomTypes && Object.keys(window.PS.roomTypes).length && window.PS.rooms[''] && window.PS.rooms[''].isPlaceholder) {
-		 console.warn('[PS][fallback] Upgrading placeholder main menu after delayed panel registration');
+	 if (window.PS && window.PS.roomTypes && Object.keys(window.PS.roomTypes).length === 0) {
+		 // panels may not have loaded yet; wait a bit longer
+		 return setTimeout(arguments.callee, 600);
+	 }
+	 if (window.PS && window.PS.rooms && window.PS.rooms[''] && window.PS.rooms[''].isPlaceholder && Object.keys(window.PS.roomTypes||{}).length) {
+		 console.warn('[PS][fallback] Upgrading placeholder main menu after panel scripts loaded');
 		 window.PS.updateRoomTypes();
 	 } else if (window.PS && (!window.PS.roomTypes || !Object.keys(window.PS.roomTypes).length)) {
-		 console.warn('[PS][fallback] No room types registered yet; check that panel-*.js scripts loaded (network 404?).');
+		 console.warn('[PS][fallback] Still no room types registered; verify panel script network responses.');
 	 }
  } catch(e) { console.warn('[PS][fallback] upgrade attempt failed', e); }
-}, 800);
+}, 500);
 </script>
 
 <script>
