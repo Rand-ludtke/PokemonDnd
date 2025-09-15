@@ -25,37 +25,45 @@ self.onmessage = (event: MessageEvent) => {
 };
 
 function connectToServer() {
-	// Always use your backend WebSocket endpoint
-	const url = 'wss://server.pokemondnd.xyz/showdown/';
+	// Use SockJS endpoint first; fallback to raw WebSocket /websocket
+	const prefix = '/showdown';
+	const host = 'server.pokemondnd.xyz';
+	const protocol = 'https';
+	const baseURL = `${protocol}://${host}${prefix}`;
 
 	try {
-		socket = new WebSocket(url);
-	} catch {
-		socket = null;
-		postMessage({ type: 'error', data: 'Failed to connect to WebSocket at ' + url });
+		// SockJS constructor may throw synchronously if not available/blocked
+		socket = new SockJS(baseURL, [], { timeout: 5 * 60 * 1000 });
+	} catch (err) {
+		try {
+			socket = new WebSocket(baseURL.replace('http', 'ws') + '/websocket');
+		} catch (err2) {
+			postMessage({ type: 'error', data: 'Failed to create socket: ' + (err2 as any).message });
+			return;
+		}
+	}
+
+	if (!socket) {
+		postMessage({ type: 'error', data: 'No socket created' });
 		return;
 	}
-	if (socket) {
-		socket.onopen = () => {
-			postMessage({ type: 'connected' });
-			for (const msg of queue) socket?.send(msg);
-			queue = [];
-		};
 
-		socket.onmessage = (e: MessageEvent) => {
-			postMessage({ type: 'message', data: e.data });
-		};
+	socket.onopen = () => {
+		postMessage({ type: 'connected' });
+		for (const msg of queue) socket?.send(msg);
+		queue = [];
+	};
 
-		socket.onclose = () => {
-			postMessage({ type: 'disconnected' });
-			// scheduleReconnect();
-		};
+	socket.onmessage = (e: MessageEvent) => {
+		postMessage({ type: 'message', data: e.data });
+	};
 
-		socket.onerror = (err: Event) => {
-			postMessage({ type: 'error', data: (err as any).message || '' });
-			socket?.close();
-		};
-		return;
-	}
-	return postMessage({ type: 'error' });
+	socket.onclose = () => {
+		postMessage({ type: 'disconnected' });
+	};
+
+	socket.onerror = (err: Event) => {
+		postMessage({ type: 'error', data: (err as any).message || '' });
+		socket?.close();
+	};
 }

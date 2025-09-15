@@ -107,17 +107,33 @@ directConnect=function directConnect(){var _this3=this;
 if(this.worker)return;
 
 
-var url='wss://server.pokemondnd.xyz/showdown/';
 
+var prefix='/showdown';
+var host='server.pokemondnd.xyz';
+var protocol='https';
+var baseURL=protocol+"://"+host+prefix;
+var socket=null;
 try{
-this.socket=new WebSocket(url);
+socket=new SockJS(baseURL,[],{timeout:5*60*1000});
+this.socket=socket;
 }catch(err){
-console.error('Failed to create WebSocket for',url,err);
+console.warn('SockJS failed, attempting raw WebSocket fallback',err);
+try{
+this.socket=new WebSocket(baseURL.replace('http','ws')+'/websocket');
+socket=this.socket;
+}catch(err2){
+console.error('Failed to create any socket',err2);
 this.socket=null;
 return;
 }
+}
 
-var socket=this.socket;
+
+PS.server.protocol=protocol;
+PS.server.host=host;
+PS.server.port=443;
+PS.server.httpport=443;
+PS.server.prefix=prefix;
 
 socket.onopen=function(){
 console.log("\u2705 (CONNECTED)");

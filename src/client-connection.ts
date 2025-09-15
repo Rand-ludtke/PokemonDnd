@@ -106,18 +106,34 @@ export class PSConnection {
 	directConnect() {
 		if (this.worker) return; // must be one or the other
 
-		// Force connection to custom backend regardless of Config/PS.server
-		const url = 'wss://server.pokemondnd.xyz/showdown/';
-
+		// Use SockJS endpoint first; fallback to native websocket sub-endpoint
+		// Ensure prefix is /showdown for your custom server
+		const prefix = '/showdown';
+		const host = 'server.pokemondnd.xyz';
+		const protocol = 'https';
+		const baseURL = `${protocol}://${host}${prefix}`;
+		let socket: any = null;
 		try {
-			this.socket = new WebSocket(url);
+			socket = new SockJS(baseURL, [], { timeout: 5 * 60 * 1000 });
+			this.socket = socket; // assign for typing convenience
 		} catch (err) {
-			console.error('Failed to create WebSocket for', url, err);
-			this.socket = null;
-			return;
+			console.warn('SockJS failed, attempting raw WebSocket fallback', err);
+			try {
+				this.socket = new WebSocket(baseURL.replace('http', 'ws') + '/websocket');
+				socket = this.socket;
+			} catch (err2) {
+				console.error('Failed to create any socket', err2);
+				this.socket = null;
+				return;
+			}
 		}
 
-		const socket = this.socket!;
+		// Adjust PS.server so other parts (login paths, etc) stay consistent
+		PS.server.protocol = protocol as any;
+		PS.server.host = host;
+		PS.server.port = 443 as any;
+		PS.server.httpport = 443 as any;
+		PS.server.prefix = prefix;
 
 		socket.onopen = () => {
 			console.log('\u2705 (CONNECTED)');
