@@ -477,9 +477,15 @@ rawQuery=function rawQuery(act,data){
 
 
 data.act=act;
-var url='/~~'+PS.server.id+'/action.php';
+
+
+
+var loginHost=Config.loginserver||Config.routes&&Config.routes.client||location.hostname;
+var loginServerId=Config.loginserverid||PS.server.id;
+var url='/~~'+loginServerId+'/action.php';
+
 if(location.pathname.endsWith('.html')){
-url='https://'+Config.routes.client+url;
+url='https://'+loginHost+url;
 if(typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY==='string'){
 data.sid=POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g,',');
 }

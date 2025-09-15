@@ -477,9 +477,15 @@ export const PSLoginServer = new class {
 		// 	return Promise.resolve(null);
 		// }
 		data.act = act;
-		let url = '/~~' + PS.server.id + '/action.php';
+		// Determine login server host & id.
+		// Allow Config.loginserver (host) and Config.loginserverid override; fall back to current PS.server context.
+		// This avoids needing inline index.html overrides.
+		const loginHost = (Config as any).loginserver || (Config.routes && Config.routes.client) || location.hostname;
+		const loginServerId = (Config as any).loginserverid || PS.server.id;
+		let url = '/~~' + loginServerId + '/action.php';
+		// If we are in a static HTML context (like GitHub Pages), switch to absolute URL so cross-origin works.
 		if (location.pathname.endsWith('.html')) {
-			url = 'https://' + Config.routes.client + url;
+			url = 'https://' + loginHost + url;
 			if (typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY === 'string') {
 				data.sid = POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g, ',');
 			}
