@@ -21,7 +21,12 @@ declare const ColorThief: any;
  *********************************************************************/
 // PS's model classes are defined here
 
-const PSURL = `${document.location.protocol !== 'http:' ? 'https:' : ''}//${Config.routes.client}/`;
+// Base asset URL. For this custom deployment the image assets (fx/*, sprites, etc)
+// live on www.pokemondnd.xyz even though the websocket server is server.pokemondnd.xyz.
+// If Config.routes.client points at the server subdomain, rewrite to the www host for assets.
+const _rawClientRoute = Config.routes.client;
+const _assetHost = /server\.pokemondnd\.xyz$/i.test(_rawClientRoute) ? 'www.pokemondnd.xyz' : _rawClientRoute;
+const PSURL = `${document.location.protocol !== 'http:' ? 'https:' : ''}//${_assetHost}/`;
 
 export class PSSubscription<T = any> {
 	observable: PSModel<T> | PSStreamModel<T>;

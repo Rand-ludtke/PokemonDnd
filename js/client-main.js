@@ -2743,4 +2743,14 @@ window.BattleSound.playSound('audio/notification.wav',this.prefs.notifvolume);
 }
 };return _class;}(PSModel))(
 );
+
+
+
+
+try{
+window.PS=PS;
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][debug] global PS bound at',Date.now());
+}
+}catch(_unused9){}
 //# sourceMappingURL=client-main.js.map

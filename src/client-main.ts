@@ -2743,3 +2743,13 @@ export const PS = new class extends PSModel {
 		}
 	}
 };
+
+// Ensure the exported PS singleton replaces any early stub placed on window so that
+// window.PS.connection etc reflect the real runtime object. This is important for
+// custom deployments where a stub was injected before bundles finished loading.
+try {
+	(window as any).PS = PS;
+	if (localStorage.getItem('ps_debug_connect') === '1') {
+		console.debug('[PS][debug] global PS bound at', Date.now());
+	}
+} catch {}

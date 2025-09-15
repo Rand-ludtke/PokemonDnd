@@ -21,7 +21,12 @@
 
 
 
-var PSURL=(document.location.protocol!=='http:'?'https:':'')+"//"+Config.routes.client+"/";var
+
+
+
+var _rawClientRoute=Config.routes.client;
+var _assetHost=/server\.pokemondnd\.xyz$/i.test(_rawClientRoute)?'www.pokemondnd.xyz':_rawClientRoute;
+var PSURL=(document.location.protocol!=='http:'?'https:':'')+"//"+_assetHost+"/";var
 
 PSSubscription=function(){
 
