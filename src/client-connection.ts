@@ -126,6 +126,20 @@ export class PSConnection {
 		const baseURL = `${protocol}://${host}${prefix}`;
 		console.debug('[PS][debug] directConnect baseURL', baseURL, 'time', Date.now());
 		let socket: any = null;
+		// If SockJS script tag is present but not yet evaluated, wait briefly (poll up to ~500ms)
+		if (typeof (window as any).SockJS === 'undefined') {
+			let waited = 0;
+			const step = 50;
+			while (typeof (window as any).SockJS === 'undefined' && waited < 500) {
+				// busy-wait minimal (synchronous sleep not available); use a blocking timestamp loop
+				const startSpin = Date.now();
+				while (Date.now() - startSpin < step) { /* spin */ }
+				waited += step;
+			}
+			if (typeof (window as any).SockJS === 'undefined') {
+				console.debug('[PS][debug] SockJS still undefined after wait, will attempt and likely fallback');
+			}
+		}
 		try {
 			const start = performance.now();
 			socket = new SockJS(baseURL, [], { timeout: 5 * 60 * 1000 });

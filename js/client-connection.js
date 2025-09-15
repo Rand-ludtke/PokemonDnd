@@ -126,6 +126,20 @@ var protocol='https';
 var baseURL=protocol+"://"+host+prefix;
 console.debug('[PS][debug] directConnect baseURL',baseURL,'time',Date.now());
 var socket=null;
+
+if(typeof window.SockJS==='undefined'){
+var waited=0;
+var step=50;
+while(typeof window.SockJS==='undefined'&&waited<500){
+
+var startSpin=Date.now();
+while(Date.now()-startSpin<step){}
+waited+=step;
+}
+if(typeof window.SockJS==='undefined'){
+console.debug('[PS][debug] SockJS still undefined after wait, will attempt and likely fallback');
+}
+}
 try{
 var start=performance.now();
 socket=new SockJS(baseURL,[],{timeout:5*60*1000});

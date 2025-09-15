@@ -88,8 +88,8 @@ window.PS = window.PS || {
 // Skip crossdomain iframe on custom deployment
 window.PS_SKIP_CROSSDOMAIN = true;
 </script>
-<!-- Use CDN SockJS directly to avoid local 404 race -->
-<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" integrity="sha384-xw4SUkE4oN3znlg07E2AEPlfsfM6tSgiXBr/c1lEkOC34ytM0WDihKhYnyHNT3KQ" crossorigin="anonymous"></script>
+<!-- Use CDN SockJS directly to avoid local 404 race (removed incorrect integrity that blocked load) -->
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
 <script src="./js/client-core.js?v1"></script>
 <script src="./js/client-connection.js?v1"></script>
 <!-- Modern bundle supplies its own module system; legacy libs omitted. -->
