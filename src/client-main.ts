@@ -1907,6 +1907,13 @@ export const PS = new class extends PSModel {
 			id: '' as RoomID,
 			title: "Home",
 		}) as MainMenuRoom;
+		try {
+			if (localStorage.getItem('ps_debug_connect') === '1') console.debug('[PS][debug] mainmenu room created', this.mainmenu);
+			const lm = document.getElementById('loading-message');
+			if (lm) {
+				lm.innerHTML = 'Loading lobby data...';
+			}
+		} catch {}
 
 		this.addRoom({
 			id: 'rooms' as RoomID,
@@ -1941,6 +1948,8 @@ export const PS = new class extends PSModel {
 		}
 
 		this.updateLayout();
+		// Ensure first DOM update so mainmenu renders and replaces loading placeholder
+		try { this.update(); } catch {}
 		window.addEventListener('resize', () => {
 			// super.update() skips another updateLayout() call
 			if (this.updateLayout()) super.update();

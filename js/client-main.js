@@ -1907,6 +1907,13 @@ _this11.mainmenu=_this11.addRoom({
 id:'',
 title:"Home"
 });
+try{
+if(localStorage.getItem('ps_debug_connect')==='1')console.debug('[PS][debug] mainmenu room created',_this11.mainmenu);
+var lm=document.getElementById('loading-message');
+if(lm){
+lm.innerHTML='Loading lobby data...';
+}
+}catch(_unused8){}
 
 _this11.addRoom({
 id:'rooms',
@@ -1941,6 +1948,8 @@ if(window.webkitNotification){var _window;
 }
 
 _this11.updateLayout();
+
+try{_this11.update();}catch(_unused9){}
 window.addEventListener('resize',function(){
 
 if(_this11.updateLayout())_PSModel.prototype.update.call(_this11);
@@ -2735,7 +2744,7 @@ window.webkitNotifications.requestPermission();
 }else if(window.Notification){
 Notification.requestPermission==null||Notification.requestPermission(function(permission){});
 }
-}catch(_unused8){}
+}catch(_unused10){}
 };_proto7.
 playNotificationSound=function playNotificationSound(){
 if(window.BattleSound&&!this.prefs.mute){
@@ -2765,7 +2774,7 @@ PSConnection.connect();
 console.warn('[PS][debug] failed to invoke static connect()',e);
 }
 },50);
-}catch(_unused9){}
+}catch(_unused11){}
 
 
 setTimeout(function(){
@@ -2773,6 +2782,6 @@ try{var _PS;
 if(!((_PS=window.PS)!=null&&_PS.connection)){
 console.warn('[PS][debug] No PS.connection after 2s. Keys on PS:',Object.keys(window.PS||{}));
 }
-}catch(_unused10){}
+}catch(_unused12){}
 },2000);
 //# sourceMappingURL=client-main.js.map
