@@ -56,6 +56,8 @@ https://psim.us/dev
 .mainmenuwrapper .mainmenu, .mainmenuwrapper .rightmenu, .mainmenuwrapper .leftmenu { pointer-events: auto; }
 /* Hide loading message cleanly when hidden */
 #loading-message.hidden { display: none !important; }
+/* Force-hide friends disabled banner if text still slips through */
+[data-ps-hide-friends] { display: none !important; }
 </style>
 <div id="header" class="header">
 	<img class="logo" src="./pokemonshowdownbeta.png" srcset="./pokemonshowdownbeta@2x.png 2x" alt="Pok&eacute;mon Showdown! (beta)" width="146" height="44" /><div class="maintabbarbottom"></div>
@@ -131,19 +133,21 @@ https://psim.us/dev
 	const HIDE_PAT = /friends list feature is currently disabled/i;
 	function hideWithin(root){
 		try {
-			root.querySelectorAll('*').forEach(el=>{ if(HIDE_PAT.test(el.textContent||'')) el.style.display='none'; });
+			root.querySelectorAll('*').forEach(el=>{ if(HIDE_PAT.test(el.textContent||'')) { el.style.display='none'; el.setAttribute('data-ps-hide-friends','1'); } });
 		} catch(e){}
 	}
 	// Initial sweep
 	setTimeout(()=>hideWithin(document.body), 500);
+	// A few periodic rescans in case injected late (especially after login or room change)
+	[1500, 3000, 6000, 10000].forEach(t=>setTimeout(()=>hideWithin(document.body), t));
 	const observer = new MutationObserver(muts => {
 		for(const m of muts){
 			m.addedNodes && m.addedNodes.forEach(n=>{ if(n.nodeType===1) hideWithin(n); });
 		}
 	});
 	try { observer.observe(document.body,{childList:true,subtree:true}); } catch(e) {}
-	// Disconnect after 15s to avoid overhead
-	setTimeout(()=>observer.disconnect(),15000);
+	// Disconnect after 30s to be safer for slower loads
+	setTimeout(()=>observer.disconnect(),30000);
 })();
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
