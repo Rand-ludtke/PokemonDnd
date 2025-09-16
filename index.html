@@ -109,6 +109,31 @@ https://psim.us/dev
 </script>
 
 <script>
+	// Remove initial static mainmenuwrapper once reactive PS main menu room is active
+	(function(){
+		function cleanupPlaceholder(){
+			try {
+				if(!window.PS || !window.PS.rooms) return;
+				const home = window.PS.rooms[''];
+				if(!home || home.isPlaceholder) return;
+				const mm = document.getElementById('mainmenu');
+				if(!mm) return;
+				// If the static wrapper still exists inside #mainmenu and has not been annotated by PS, remove it
+				const wrappers = mm.querySelectorAll('.mainmenuwrapper');
+				wrappers.forEach(w => {
+					if(!w.hasAttribute('data-ps-bound')) {
+						w.parentElement?.removeChild(w);
+						if(localStorage.getItem('ps_debug_connect')==='1') console.debug('[PS][cleanup] Removed static mainmenuwrapper');
+					}
+				});
+				// Ensure mainmenu remains interactive
+				mm.style.pointerEvents='auto';
+			} catch(e){}
+		}
+		setTimeout(cleanupPlaceholder, 1200);
+		setTimeout(cleanupPlaceholder, 3000);
+	})();
+</script>
 // Safety net: if TeamEditor failed to load before teambuilder panels tried to render, attempt deferred load.
 (function(){
 	function ensureTeamEditor(){
@@ -208,6 +233,7 @@ window.PS = window.PS || {
 		 'panels','panel-mainmenu','panel-rooms','panel-chat','panel-chat-tournament','panel-battle',
 		 // Teambuilder deps: search backend then team editor
 		 'battle-dex-search',
+		 'battle-searchresults',
 		 'battle-team-editor',
 		 'panel-teambuilder','panel-teambuilder-team','panel-teamdropdown','panel-ladder','panel-page',
 		 'panel-popups','panel-resources','panel-topbar'
