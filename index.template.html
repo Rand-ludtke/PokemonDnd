@@ -204,6 +204,24 @@ window.PS = window.PS || {
 
 <script src="./js/battledata.js?v1"></script>
 <!-- Removed color-thief (optional feature) for minimal deployment -->
+<!-- Minimal HTML sanitizer shim (caja substitute) so BattleLog.sanitizeHTML doesn't throw. -->
+<script>
+if(!window.html4){
+	window.html4 = { ELEMENTS:{}, ATTRIBS:{}, eflags:{'OPTIONAL_ENDTAG':1,'EMPTY':2,'UNSAFE':4}, atype:{'GLOBAL':0}, ATTRIBS_GLOBAL:{} };
+	['a','b','i','u','small','br','span','div','em','strong','p','ul','ol','li','table','tbody','tr','td','th','code','pre']
+		.forEach(t=>{ html4.ELEMENTS[t]=0; });
+	['script','style','iframe'].forEach(t=>{ html4.ELEMENTS[t]=html4.eflags['UNSAFE']; });
+	window.html = window.html || {};
+	window.html.sanitizeWithPolicy = function(html, policy){
+		try {
+			html = html.replace(/<\/(script|style|iframe)>/gi,'')
+								 .replace(/<(script|style|iframe)[^>]*>[\s\S]*?<\/\1>/gi,'')
+								 .replace(/ on[a-z]+="[^"]*"/gi,'');
+		} catch(e) { return ''; }
+		return html;
+	};
+}
+</script>
 
 <script>
 	LM.innerHTML += ' DONE<br />Loading modern client bundle...';
@@ -300,6 +318,24 @@ setTimeout(function(){
 		}
 	} catch(e) {}
 }, 4000);
+</script>
+<script>
+(function(){
+	let attempts=0;
+	function ensureUpgraded(){
+		attempts++;
+		try {
+			const mm=document.getElementById('mainmenu'); if(mm) mm.style.pointerEvents='auto';
+			if(window.PS && window.PS.updateRoomTypes){
+				const home=window.PS.rooms && window.PS.rooms[''];
+				if(!home || home.isPlaceholder){ window.PS.updateRoomTypes(); }
+				else return;
+			}
+		} catch(e) {}
+		if(attempts<8) setTimeout(ensureUpgraded,1000);
+	}
+	setTimeout(ensureUpgraded,1500);
+})();
 </script>
 
 <script>
