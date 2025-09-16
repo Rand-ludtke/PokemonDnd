@@ -498,6 +498,18 @@ data.sid=POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g,',');
 if(localStorage.getItem('ps_debug_connect')==='1'){
 console.debug('[PS][login] POST',url,'act='+act);
 }
+
+
+
+if(loginProxy){
+var formBody=Object.keys(data).map(function(k){return encodeURIComponent(k)+'='+encodeURIComponent(''+data[k]);}).join('&');
+return fetch(url,{
+method:'POST',
+headers:{'Content-Type':'application/x-www-form-urlencoded'},
+body:formBody,
+credentials:'include'
+}).then(function(res){return res.text();})["catch"](function(){return null;});
+}
 return PSStorage.request('POST',url,data)||Net(url).get({method:'POST',body:data}).then(
 function(res){return res!=null?res:null;}
 )["catch"](

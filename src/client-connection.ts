@@ -498,6 +498,18 @@ export const PSLoginServer = new class {
 		if (localStorage.getItem('ps_debug_connect') === '1') {
 			console.debug('[PS][login] POST', url, 'act=' + act);
 		}
+		// If using a same-origin proxy in a purely static hosting environment, PSStorage crossdomain iframe
+		// may not exist and Net() abstraction might introduce CORS/headers we don't want. In that case,
+		// fall back to a direct fetch with an x-www-form-urlencoded body.
+		if (loginProxy) {
+			const formBody = Object.keys(data).map(k => encodeURIComponent(k) + '=' + encodeURIComponent('' + (data as any)[k])).join('&');
+			return fetch(url, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: formBody,
+				credentials: 'include',
+			}).then(res => res.text()).catch(() => null);
+		}
 		return PSStorage.request('POST', url, data) || Net(url).get({ method: 'POST', body: data }).then(
 			res => res ?? null
 		).catch(
