@@ -71,6 +71,35 @@ https://psim.us/dev
 <script>
 	var LM = document.getElementById('loading-message');
 	LM.innerHTML += ' DONE<br />Loading libraries...';
+	// Failsafe: auto-dismiss stuck news/embed overlay so UI becomes interactive
+	(function(){
+		function dismissIfStuck(){
+			try {
+				// The legacy embed sits inside .pm-window.news-embed; if it still shows failure text or
+				// hasn't been replaced by the modern mini-room within a grace period, hide it.
+				var newsWin = document.querySelector('.pm-window.news-embed');
+				if (newsWin) {
+					var log = newsWin.querySelector('.pm-log');
+					var failed = log && /failed to retrieve news/i.test(log.textContent || '');
+					// Also treat empty or unchanged placeholder as failure after timeout
+					if (failed) {
+						newsWin.parentElement && (newsWin.parentElement.removeChild(newsWin));
+						if (localStorage.getItem('ps_debug_connect')==='1') console.warn('[PS][news-failsafe] Removed stale news embed');
+					}
+				}
+				// Always ensure main menu interactive regardless of news status
+				var mm = document.getElementById('mainmenu');
+				if (mm) mm.style.pointerEvents = 'auto';
+			} catch(e){/* ignore */}
+		}
+		// Run after a short delay to allow normal client code to initialize
+		setTimeout(dismissIfStuck, 2200);
+		// Secondary watchdog in case slower devices take longer
+		setTimeout(dismissIfStuck, 5000);
+	})();
+</script>
+
+<script>
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
 <!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
