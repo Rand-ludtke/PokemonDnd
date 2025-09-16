@@ -60,63 +60,32 @@ https://psim.us/dev
 <div id="header" class="header">
 	<img class="logo" src="./pokemonshowdownbeta.png" srcset="./pokemonshowdownbeta@2x.png 2x" alt="Pok&eacute;mon Showdown! (beta)" width="146" height="44" /><div class="maintabbarbottom"></div>
 </div>
-<div class="ps-room scrollable" id="mainmenu"><div class="mainmenuwrapper">
-	<div class="leftmenu">
-		<div class="activitymenu">
-			<div class="pmbox">
-				<div class="pm-window news-embed" data-newsid="0">
-					<h3><button class="closebutton" tabindex="-1"><i class="fa fa-times-circle"></i></button><button class="minimizebutton" tabindex="-1"><i class="fa fa-minus-circle"></i></button>News</h3>
-					<div class="pm-log" style="max-height:none">
-						[failed to retrieve news]
-					</div>
-				</div>
-			</div>
-		</div>
-		<div class="mainmenu">
-			<div id="loading-message" class="mainmessage">Initializing... <noscript>FAILED<br /><br />Pok&eacute;mon Showdown requires JavaScript.</noscript></div>
-		</div>
-	</div>
-	<div class="rightmenu">
-	</div>
-	<div class="mainmenufooter">
-		<div class="bgcredit"></div>
-		<small><a href="//dex.pokemonshowdown.com/" target="_blank">Pok&eacute;dex</a> | <a href="//re./" target="_blank">Replays</a> | <a href="//server.pokemondnd.xyz/rules" target="_blank">Rules</a> | <a href="//server.pokemondnd.xyz/credits" target="_blank">Credits</a> | <a href="http://smogon.com/forums/" target="_blank">Forum</a> | <a href="//server.pokemondnd.xyz/privacy" target="_blank">Privacy policy</a></small>
-	</div>
-</div></div>
+<!-- Simplified mainmenu container: dynamic client will populate. -->
+<div id="mainmenu" class="ps-room scrollable">
+  <div id="loading-message" class="mainmessage">Initializing... <noscript>FAILED<br /><br />Pok&eacute;mon Showdown requires JavaScript.</noscript></div>
+</div>
 <script>
 	var LM = document.getElementById('loading-message');
 	LM.innerHTML += ' DONE<br />Loading libraries...';
-	// Failsafe: auto-dismiss stuck news/embed overlay so UI becomes interactive
+	// Failsafe + placeholder cleanup (rewritten to fix malformed earlier version)
 	(function(){
 		function dismissIfStuck(){
 			try {
-				// The legacy embed sits inside .pm-window.news-embed; if it still shows failure text or
-				// hasn't been replaced by the modern mini-room within a grace period, hide it.
+				// Legacy news embed removal if still failed
 				var newsWin = document.querySelector('.pm-window.news-embed');
 				if (newsWin) {
 					var log = newsWin.querySelector('.pm-log');
 					var failed = log && /failed to retrieve news/i.test(log.textContent || '');
-					// Also treat empty or unchanged placeholder as failure after timeout
 					if (failed) {
-						newsWin.parentElement && (newsWin.parentElement.removeChild(newsWin));
+						newsWin.remove();
 						if (localStorage.getItem('ps_debug_connect')==='1') console.warn('[PS][news-failsafe] Removed stale news embed');
 					}
 				}
-				// Always ensure main menu interactive regardless of news status
-				var mm = document.getElementById('mainmenu');
-				if (mm) mm.style.pointerEvents = 'auto';
-			} catch(e){/* ignore */}
+			} catch(e) {}
+			// Always ensure main menu interactive regardless of news status
+			var mm = document.getElementById('mainmenu');
+			if (mm) mm.style.pointerEvents = 'auto';
 		}
-		// Run after a short delay to allow normal client code to initialize
-		setTimeout(dismissIfStuck, 2200);
-		// Secondary watchdog in case slower devices take longer
-		setTimeout(dismissIfStuck, 5000);
-	})();
-</script>
-
-<script>
-	// Remove initial static mainmenuwrapper once reactive PS main menu room is active
-	(function(){
 		function cleanupPlaceholder(){
 			try {
 				if(!window.PS || !window.PS.rooms) return;
@@ -124,23 +93,18 @@ https://psim.us/dev
 				if(!home || home.isPlaceholder) return;
 				const mm = document.getElementById('mainmenu');
 				if(!mm) return;
-				// If the static wrapper still exists inside #mainmenu and has not been annotated by PS, remove it
-				const wrappers = mm.querySelectorAll('.mainmenuwrapper');
-				wrappers.forEach(w => {
-					if(!w.hasAttribute('data-ps-bound')) {
-						w.parentElement?.removeChild(w);
-						if(localStorage.getItem('ps_debug_connect')==='1') console.debug('[PS][cleanup] Removed static mainmenuwrapper');
-					}
-				});
-				// Ensure mainmenu remains interactive
+				mm.querySelectorAll('.mainmenuwrapper').forEach(w => { if(!w.hasAttribute('data-ps-bound')) w.remove(); });
 				mm.style.pointerEvents='auto';
 				if(!mm.innerHTML.trim()) mm.classList.add('ps-empty'); else mm.classList.remove('ps-empty');
 			} catch(e){}
 		}
-		setTimeout(cleanupPlaceholder, 1200);
-		setTimeout(cleanupPlaceholder, 3000);
+		setTimeout(dismissIfStuck,1800);
+		setTimeout(dismissIfStuck,4000);
+		setTimeout(cleanupPlaceholder,1200);
+		setTimeout(cleanupPlaceholder,3000);
+		setTimeout(cleanupPlaceholder,6000);
 	})();
- </script>
+</script>
 <script>
 // Safety net: if TeamEditor failed to load before teambuilder panels tried to render, attempt deferred load.
 (function(){
@@ -161,8 +125,26 @@ https://psim.us/dev
 	setTimeout(ensureTeamEditor, 6000);
 })();
 </script>
-
 <script>
+// Suppress friends list feature disabled banner
+(function(){
+	const HIDE_PAT = /friends list feature is currently disabled/i;
+	function hideWithin(root){
+		try {
+			root.querySelectorAll('*').forEach(el=>{ if(HIDE_PAT.test(el.textContent||'')) el.style.display='none'; });
+		} catch(e){}
+	}
+	// Initial sweep
+	setTimeout(()=>hideWithin(document.body), 500);
+	const observer = new MutationObserver(muts => {
+		for(const m of muts){
+			m.addedNodes && m.addedNodes.forEach(n=>{ if(n.nodeType===1) hideWithin(n); });
+		}
+	});
+	try { observer.observe(document.body,{childList:true,subtree:true}); } catch(e) {}
+	// Disconnect after 15s to avoid overhead
+	setTimeout(()=>observer.disconnect(),15000);
+})();
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
 <!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
@@ -183,7 +165,6 @@ window.PS = window.PS || {
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
 <script src="./js/client-core.js?v1"></script>
 <script src="./js/client-connection.js?v1"></script>
-</script>
 <script>
 // Poll for connection state to update loading UI (temporary until mainmenu renders)
 (function pollConnected(){
