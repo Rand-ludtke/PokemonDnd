@@ -239,7 +239,10 @@ if(!window.html4){
 <script>
  (function(){
 	 const panelScripts = [
-		 'panels','panel-mainmenu','panel-rooms','panel-chat','panel-chat-tournament','panel-battle',
+		 'panels','panel-mainmenu','panel-rooms',
+		 // MiniEdit must load before chat entry mounts
+		 'miniedit',
+		 'panel-chat','panel-chat-tournament','panel-battle',
 		 // Teambuilder deps: search backend, tooltips (BattleStatGuesser), searchresults, then team editor
 		 'battle-dex-search',
 		 'battle-tooltips',
