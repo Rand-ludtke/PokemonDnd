@@ -58,3 +58,7 @@ Config.loginserverid = 'server-pokemondnd-xyz';
 Config.server = Config.defaultserver;
 // Local same-origin proxy to avoid browser CORS when contacting official loginserver
 Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy';
+// Force resource/sprite host to www (static asset domain) so images don't request from battle server
+Config.resourceprefix = 'https://www.pokemondnd.xyz/';
+// Some UI elements use Dex.fxPrefix for tiny icons (gender etc); ensure it aligns
+Config.fxprefix = Config.resourceprefix + 'fx/';
