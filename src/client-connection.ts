@@ -483,12 +483,15 @@ export const PSLoginServer = new class {
 		const loginHost = (Config as any).loginserver || (Config.routes && Config.routes.client) || location.hostname;
 		const loginServerId = (Config as any).loginserverid || PS.server.id;
 		let url = '/~~' + loginServerId + '/action.php';
-		// If we are in a static HTML context (like GitHub Pages), switch to absolute URL so cross-origin works.
-		if (location.pathname.endsWith('.html')) {
-			url = 'https://' + loginHost + url;
-			if (typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY === 'string') {
-				data.sid = POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g, ',');
-			}
+		// Always make absolute if override host differs from current hostname or we're on a static .html path
+		if (loginHost !== location.hostname || location.pathname.endsWith('.html')) {
+			url = (location.protocol === 'http:' ? 'http://' : 'https://') + loginHost + url;
+		}
+		if (typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY === 'string') {
+			data.sid = POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g, ',');
+		}
+		if (localStorage.getItem('ps_debug_connect') === '1') {
+			console.debug('[PS][login] POST', url, 'act=' + act);
 		}
 		return PSStorage.request('POST', url, data) || Net(url).get({ method: 'POST', body: data }).then(
 			res => res ?? null

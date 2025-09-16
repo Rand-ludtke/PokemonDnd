@@ -137,9 +137,10 @@ window.PS_SKIP_CROSSDOMAIN = true;
 -->
 
 <!-- Modern entrypoint (generated from TypeScript). Depends on client-core & client-connection above. -->
-<script src="./js/client-main.js?v1" type="text/javascript" onload="(function(){try{var lm=document.getElementById('loading-message'); if(lm && !/Connected/.test(lm.innerHTML)) lm.innerHTML='Client loaded. Connecting...';}catch(e){}})();"></script>
-<!-- Preact runtime (needed as global for compiled panel bundles which reference `preact`) -->
+<!-- Load preact FIRST so that panel bundles which expect global `preact` don't race it -->
 <script src="https://cdn.jsdelivr.net/npm/preact@10/dist/preact.min.js" crossorigin="anonymous"></script>
+<!-- Main client entrypoint (after preact so any immediate panel evaluation has runtime) -->
+<script src="./js/client-main.js?v1" type="text/javascript" onload="(function(){try{var lm=document.getElementById('loading-message'); if(lm && !/Connected/.test(lm.innerHTML)) lm.innerHTML='Client loaded. Connecting...';}catch(e){}})();"></script>
 <!-- Dynamic panel bundle loader to guarantee sequential order and then upgrade placeholder -->
 <script>
  (function(){

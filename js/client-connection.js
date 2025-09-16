@@ -484,11 +484,14 @@ var loginHost=Config.loginserver||Config.routes&&Config.routes.client||location.
 var loginServerId=Config.loginserverid||PS.server.id;
 var url='/~~'+loginServerId+'/action.php';
 
-if(location.pathname.endsWith('.html')){
-url='https://'+loginHost+url;
+if(loginHost!==location.hostname||location.pathname.endsWith('.html')){
+url=(location.protocol==='http:'?'http://':'https://')+loginHost+url;
+}
 if(typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY==='string'){
 data.sid=POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g,',');
 }
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][login] POST',url,'act='+act);
 }
 return PSStorage.request('POST',url,data)||Net(url).get({method:'POST',body:data}).then(
 function(res){return res!=null?res:null;}
