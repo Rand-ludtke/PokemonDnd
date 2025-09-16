@@ -100,6 +100,29 @@ https://psim.us/dev
 </script>
 
 <script>
+// Safety net: if TeamEditor failed to load before teambuilder panels tried to render, attempt deferred load.
+(function(){
+	function ensureTeamEditor(){
+		try {
+			if (window.TeamEditor || (window.PS && window.PS.TeamEditor)) return; // already present
+			if (document.querySelector('script[data-loaded-teameditor]')) return; // already retried
+			var s = document.createElement('script');
+			s.src = './js/battle-team-editor.js?v1';
+			s.async = true;
+			s.dataset.loadedTeameditor = '1';
+			s.onload = function(){ if(localStorage.getItem('ps_debug_connect')==='1') console.debug('[PS][teambuilder] Deferred TeamEditor loaded'); };
+			s.onerror = function(){ console.warn('[PS][teambuilder] Failed to load battle-team-editor.js in safety net'); };
+			document.head.appendChild(s);
+		} catch(e) {}
+	}
+	// Try shortly after initial panel load sequence should have completed
+	setTimeout(ensureTeamEditor, 2500);
+	// Second attempt if still missing
+	setTimeout(ensureTeamEditor, 6000);
+})();
+</script>
+
+<script>
 </script>
 <script nomodule src="./js/lib/ps-polyfill.js"></script>
 <!-- Removed legacy jQuery-era libraries to avoid 404s on custom host -->
@@ -174,6 +197,8 @@ window.PS = window.PS || {
  (function(){
 	 const panelScripts = [
 		 'panels','panel-mainmenu','panel-rooms','panel-chat','panel-chat-tournament','panel-battle',
+		 // Ensure TeamEditor (battle-team-editor.js) loads before teambuilder panels that import it
+		 'battle-team-editor',
 		 'panel-teambuilder','panel-teambuilder-team','panel-teamdropdown','panel-ladder','panel-page',
 		 'panel-popups','panel-resources','panel-topbar'
 	 ];
