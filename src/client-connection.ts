@@ -482,10 +482,15 @@ export const PSLoginServer = new class {
 		// This avoids needing inline index.html overrides.
 		const loginHost = (Config as any).loginserver || (Config.routes && Config.routes.client) || location.hostname;
 		const loginServerId = (Config as any).loginserverid || PS.server.id;
-		let url = '/~~' + loginServerId + '/action.php';
+		// If a same-origin proxy is configured, prefer that to avoid CORS entirely.
+		const loginProxy = (Config as any).loginProxy as string | undefined;
+		let url = loginProxy || ('/~~' + loginServerId + '/action.php');
 		// Always make absolute if override host differs from current hostname or we're on a static .html path
 		if (loginHost !== location.hostname || location.pathname.endsWith('.html')) {
-			url = (location.protocol === 'http:' ? 'http://' : 'https://') + loginHost + url;
+			// Only rewrite host if we are not intentionally using a same-origin proxy path.
+			if (!loginProxy) {
+				url = (location.protocol === 'http:' ? 'http://' : 'https://') + loginHost + url;
+			}
 		}
 		if (typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY === 'string') {
 			data.sid = POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g, ',');

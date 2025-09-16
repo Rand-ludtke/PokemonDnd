@@ -482,10 +482,15 @@ data.act=act;
 
 var loginHost=Config.loginserver||Config.routes&&Config.routes.client||location.hostname;
 var loginServerId=Config.loginserverid||PS.server.id;
-var url='/~~'+loginServerId+'/action.php';
+
+var loginProxy=Config.loginProxy;
+var url=loginProxy||'/~~'+loginServerId+'/action.php';
 
 if(loginHost!==location.hostname||location.pathname.endsWith('.html')){
+
+if(!loginProxy){
 url=(location.protocol==='http:'?'http://':'https://')+loginHost+url;
+}
 }
 if(typeof POKEMON_SHOWDOWN_TESTCLIENT_KEY==='string'){
 data.sid=POKEMON_SHOWDOWN_TESTCLIENT_KEY.replace(/%2C/g,',');
