@@ -57,4 +57,4 @@ Config.loginserverid = 'server-pokemondnd-xyz';
 // Ensure explicit server definition (harmless when client route matches)
 Config.server = Config.defaultserver;
 // Local same-origin proxy to avoid browser CORS when contacting official loginserver
-Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy.php';
+Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy';
