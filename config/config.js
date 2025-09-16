@@ -62,3 +62,9 @@ Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy';
 Config.resourceprefix = 'https://www.pokemondnd.xyz/';
 // Some UI elements use Dex.fxPrefix for tiny icons (gender etc); ensure it aligns
 Config.fxprefix = Config.resourceprefix + 'fx/';
+// Override routes.client AFTER autogen so Dex.resourcePrefix picks up the www host for static assets
+// Keep server connection pointing to battle host via Config.server
+if (Config.routes) {
+	Config.routes.client = 'www.pokemondnd.xyz';
+	Config.routes.root = 'www.pokemondnd.xyz';
+}

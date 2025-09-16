@@ -133,7 +133,8 @@ https://psim.us/dev
 		setTimeout(cleanupPlaceholder, 1200);
 		setTimeout(cleanupPlaceholder, 3000);
 	})();
-</script>
+ </script>
+<script>
 // Safety net: if TeamEditor failed to load before teambuilder panels tried to render, attempt deferred load.
 (function(){
 	function ensureTeamEditor(){
@@ -149,9 +150,7 @@ https://psim.us/dev
 			document.head.appendChild(s);
 		} catch(e) {}
 	}
-	// Try shortly after initial panel load sequence should have completed
 	setTimeout(ensureTeamEditor, 2500);
-	// Second attempt if still missing
 	setTimeout(ensureTeamEditor, 6000);
 })();
 </script>
@@ -231,8 +230,9 @@ window.PS = window.PS || {
  (function(){
 	 const panelScripts = [
 		 'panels','panel-mainmenu','panel-rooms','panel-chat','panel-chat-tournament','panel-battle',
-		 // Teambuilder deps: search backend then team editor
+		 // Teambuilder deps: search backend, tooltips (BattleStatGuesser), searchresults, then team editor
 		 'battle-dex-search',
+		 'battle-tooltips',
 		 'battle-searchresults',
 		 'battle-team-editor',
 		 'panel-teambuilder','panel-teambuilder-team','panel-teamdropdown','panel-ladder','panel-page',
@@ -273,6 +273,8 @@ window.PS = window.PS || {
 		 console.warn('[PS][dynamic] preact not present before panel load; panels may fail.');
 		 loadNext();
 	 }
+	 // Early force-clear of any static wrappers before panel load begins
+	 try { const mm=document.getElementById('mainmenu'); if(mm){ mm.querySelectorAll('.mainmenuwrapper').forEach(w=>{ if(!w.hasAttribute('data-ps-bound')) w.remove(); }); mm.style.pointerEvents='auto'; } } catch(e) {}
  })();
  </script>
 
