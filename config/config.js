@@ -40,7 +40,8 @@ Config.version = "0.11.2 (322528ff)";
 
 Config.routes = {
 	root: 'server.pokemondnd.xyz',
-	client: 'server.pokemondnd.xyz',
+	// Use official play domain as client route so crossdomain iframe (crossdomain.php) is hosted there
+	client: 'play.pokemonshowdown.com',
 	dex: 'dex.pokemonshowdown.com',
 	replays: 'replay.pokemonshowdown.com',
 	users: 'pokemonshowdown.com/users',
@@ -54,3 +55,6 @@ Config.routes = {
 // We use the server's own id so challstr/auth flow remains consistent with our custom server.
 Config.loginserver = 'play.pokemonshowdown.com';
 Config.loginserverid = 'server-pokemondnd-xyz';
+// Ensure we still connect to our own battle server despite changing routes.client
+// (client-connection code respects Config.server if already defined)
+Config.server = Config.defaultserver;

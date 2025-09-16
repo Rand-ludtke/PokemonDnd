@@ -85,8 +85,7 @@ window.PS = window.PS || {
 	confirm(msg){ return Promise.resolve(false); },
 	alert(msg){ console.warn('[PS alert]', msg); },
 };
-// Skip crossdomain iframe on custom deployment
-window.PS_SKIP_CROSSDOMAIN = true;
+// Crossdomain iframe enabled (PS_SKIP_CROSSDOMAIN removed)
 </script>
 <!-- Use CDN SockJS directly to avoid local 404 race (removed incorrect integrity that blocked load) -->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
