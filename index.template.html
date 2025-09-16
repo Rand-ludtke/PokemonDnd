@@ -134,6 +134,7 @@ https://psim.us/dev
 				});
 				// Ensure mainmenu remains interactive
 				mm.style.pointerEvents='auto';
+				if(!mm.innerHTML.trim()) mm.classList.add('ps-empty'); else mm.classList.remove('ps-empty');
 			} catch(e){}
 		}
 		setTimeout(cleanupPlaceholder, 1200);
