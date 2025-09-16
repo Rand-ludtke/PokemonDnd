@@ -36,6 +36,12 @@ https://psim.us/dev
 <link rel="stylesheet" href="./style/sim-types.css?v1" />
 <link rel="stylesheet" href="./style/utilichart.css?v1" />
 <link rel="stylesheet" href="./style/font-awesome.css?v1" />
+<!-- Additional style bundles needed for full Teambuilder UI -->
+<link rel="stylesheet" href="./style/teambuilder.css?v1" />
+<link rel="stylesheet" href="./style/battle-search.css?v1" />
+<link rel="stylesheet" href="./style/battle-log.css?v1" />
+<!-- client2.css contains some shared layout refinements (optional but helps spacing) -->
+<link rel="stylesheet" href="./style/client2.css?v1" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <link rel="manifest" href="/manifest.json" />
 <!--[if lte IE 8]><script>document.location.replace('http://pokemonshowdown.com/autodownload/win');</script><![endif]-->
@@ -277,6 +283,24 @@ window.PS = window.PS || {
 	 try { const mm=document.getElementById('mainmenu'); if(mm){ mm.querySelectorAll('.mainmenuwrapper').forEach(w=>{ if(!w.hasAttribute('data-ps-bound')) w.remove(); }); mm.style.pointerEvents='auto'; } } catch(e) {}
  })();
  </script>
+
+<script>
+// Hard fallback: after full panel chain + 4s, if mainmenu still placeholder or empty, force updateRoomTypes
+setTimeout(function(){
+	try {
+		if(window.PS && window.PS.rooms && window.PS.rooms['']){
+			var home = window.PS.rooms[''];
+			var needsUpgrade = home.isPlaceholder || !document.querySelector('#mainmenu .ps-room') && !document.querySelector('#mainmenu .mainmenuwrapper[data-ps-bound]');
+			if(needsUpgrade && typeof window.PS.updateRoomTypes === 'function') {
+				console.warn('[PS][fallback] Forcing mainmenu upgrade');
+				window.PS.updateRoomTypes();
+			}
+			var mm=document.getElementById('mainmenu');
+			if(mm) mm.style.pointerEvents='auto';
+		}
+	} catch(e) {}
+}, 4000);
+</script>
 
 <script>
 // Fallback: if room types failed to register before client-main ran (rare), try upgrading placeholder.
