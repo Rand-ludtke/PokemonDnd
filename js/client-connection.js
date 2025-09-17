@@ -115,14 +115,14 @@ return false;
 }
 };_proto.
 
-directConnect=function directConnect(){var _this3=this;
+directConnect=function directConnect(){var _PS$server,_PS$server2,_PS$server3,_PS$server4,_PS$server5,_this3=this;
 if(this.worker)return;
 
 
 
-var prefix='/showdown';
-var host='server.pokemondnd.xyz';
-var protocol='https';
+var protocol=PS.server.protocol||'https';
+var host=PS.server.host||location.hostname;
+var prefix=PS.server.prefix||'/showdown';
 var baseURL=protocol+"://"+host+prefix;
 console.debug('[PS][debug] directConnect baseURL',baseURL,'time',Date.now());
 var socket=null;
@@ -160,11 +160,11 @@ return;
 }
 
 
-PS.server.protocol=protocol;
-PS.server.host=host;
-PS.server.port=443;
-PS.server.httpport=443;
-PS.server.prefix=prefix;
+(_PS$server=PS.server).protocol||(_PS$server.protocol=protocol);
+(_PS$server2=PS.server).host||(_PS$server2.host=host);
+(_PS$server3=PS.server).port||(_PS$server3.port=protocol==='https'?443:80);
+(_PS$server4=PS.server).httpport||(_PS$server4.httpport=protocol==='https'?443:80);
+(_PS$server5=PS.server).prefix||(_PS$server5.prefix=prefix);
 
 socket.onopen=function(){
 console.debug('[PS][debug] socket onopen fired at',Date.now());
@@ -177,12 +177,20 @@ PS.update();
 };
 
 socket.onmessage=function(ev){
-if(typeof ev.data==='string'&&ev.data.startsWith('a[')){
+var raw=''+ev.data;
+if(typeof raw==='string'&&raw.startsWith('a[')){
 
-}else{
-console.debug('[PS][debug] message frame length',(''+ev.data).length);
+try{
+var arr=JSON.parse(raw.slice(1));for(var _i2=0;_i2<
+arr.length;_i2++){var msg=arr[_i2];PS.receive(msg);}
+return;
+}catch(e){
+console.warn('[PS][debug] Failed to parse SockJS frame',e);
 }
-PS.receive(''+ev.data);
+}else{
+console.debug('[PS][debug] message frame length',raw.length);
+}
+PS.receive(raw);
 };
 
 socket.onclose=function(){
@@ -633,8 +641,8 @@ return urlencodedData;
 Net.formData=function(form){
 
 var elements=form.querySelectorAll('input[name], select[name], textarea[name]');
-var out={};for(var _i2=0;_i2<
-elements.length;_i2++){var element=elements[_i2];
+var out={};for(var _i4=0;_i4<
+elements.length;_i4++){var element=elements[_i4];
 if(element.type==='checkbox'){
 out[element.name]=element.getAttribute('value')?
 element.checked?element.value:'':

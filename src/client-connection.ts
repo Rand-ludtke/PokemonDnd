@@ -118,12 +118,12 @@ export class PSConnection {
 	directConnect() {
 		if (this.worker) return; // must be one or the other
 
-		// Use SockJS endpoint first; fallback to native websocket sub-endpoint
-		// Ensure prefix is /showdown for your custom server
-		const prefix = '/showdown';
-		const host = 'server.pokemondnd.xyz';
-		const protocol = 'https';
-		const baseURL = `${protocol}://${host}${prefix}`;
+	// Use SockJS endpoint first; fallback to native websocket sub-endpoint.
+	// Build from PS.server (populated by config/crossdomain) instead of hardcoding.
+	const protocol = (PS.server.protocol || 'https') as 'http' | 'https';
+	const host = PS.server.host || location.hostname;
+	const prefix = PS.server.prefix || '/showdown';
+	const baseURL = `${protocol}://${host}${prefix}`;
 		console.debug('[PS][debug] directConnect baseURL', baseURL, 'time', Date.now());
 		let socket: any = null;
 		// If SockJS script tag is present but not yet evaluated, wait briefly (poll up to ~500ms)
@@ -159,12 +159,12 @@ export class PSConnection {
 			}
 		}
 
-		// Adjust PS.server so other parts (login paths, etc) stay consistent
-		PS.server.protocol = protocol as any;
-		PS.server.host = host;
-		PS.server.port = 443 as any;
-		PS.server.httpport = 443 as any;
-		PS.server.prefix = prefix;
+	// Ensure PS.server has the fields we used (prefix may be set later by crossdomain, so don't overwrite)
+	PS.server.protocol ||= protocol as any;
+	PS.server.host ||= host;
+	PS.server.port ||= (protocol === 'https' ? 443 : 80) as any;
+	PS.server.httpport ||= (protocol === 'https' ? 443 : 80) as any;
+	PS.server.prefix ||= prefix;
 
 		socket.onopen = () => {
 			console.debug('[PS][debug] socket onopen fired at', Date.now());
@@ -177,12 +177,20 @@ export class PSConnection {
 		};
 
 		socket.onmessage = (ev: MessageEvent) => {
-			if (typeof ev.data === 'string' && ev.data.startsWith('a[')) {
-				// SockJS frame; keep minimal
+			const raw = '' + (ev.data as any);
+			if (typeof raw === 'string' && raw.startsWith('a[')) {
+				// SockJS wraps messages as: a["msg","msg2",...]
+				try {
+					const arr: string[] = JSON.parse(raw.slice(1));
+					for (const msg of arr) PS.receive(msg);
+					return;
+				} catch (e) {
+					console.warn('[PS][debug] Failed to parse SockJS frame', e);
+				}
 			} else {
-				console.debug('[PS][debug] message frame length', (''+ev.data).length);
+				console.debug('[PS][debug] message frame length', raw.length);
 			}
-			PS.receive('' + ev.data);
+			PS.receive(raw);
 		};
 
 		socket.onclose = () => {

@@ -26,9 +26,9 @@ socket=null;
 
 function connectToServer(){
 
-var prefix='/showdown';
-var host='server.pokemondnd.xyz';
-var protocol='https';
+var protocol=serverInfo.protocol||'https';
+var host=serverInfo.host||self.location.hostname;
+var prefix=serverInfo.prefix||'/showdown';
 var baseURL=protocol+"://"+host+prefix;
 postMessage({type:'debug',data:'[worker] baseURL '+baseURL+' t='+Date.now()});
 
@@ -62,11 +62,21 @@ queue=[];
 };
 
 socket.onmessage=function(e){
+var raw=''+e.data;
 
-if(typeof e.data==='string'&&e.data.length<200){
-postMessage({type:'debug',data:'[worker] frame sample '+e.data.slice(0,80)});
+if(typeof raw==='string'&&raw.length<200){
+postMessage({type:'debug',data:'[worker] frame sample '+raw.slice(0,80)});
 }
-postMessage({type:'message',data:e.data});
+if(typeof raw==='string'&&raw.startsWith('a[')){
+try{
+var arr=JSON.parse(raw.slice(1));for(var _i4=0;_i4<
+arr.length;_i4++){var msg=arr[_i4];postMessage({type:'message',data:msg});}
+return;
+}catch(e){
+postMessage({type:'debug',data:'[worker] failed to parse SockJS frame'});
+}
+}
+postMessage({type:'message',data:raw});
 };
 
 socket.onclose=function(){

@@ -26,9 +26,9 @@ self.onmessage = (event: MessageEvent) => {
 
 function connectToServer() {
 	// Use SockJS endpoint first; fallback to raw WebSocket /websocket
-	const prefix = '/showdown';
-	const host = 'server.pokemondnd.xyz';
-	const protocol = 'https';
+	const protocol = (serverInfo.protocol || 'https') as 'http' | 'https';
+	const host = serverInfo.host || self.location.hostname;
+	const prefix = serverInfo.prefix || '/showdown';
 	const baseURL = `${protocol}://${host}${prefix}`;
 	postMessage({ type: 'debug', data: '[worker] baseURL ' + baseURL + ' t=' + Date.now() });
 
@@ -62,11 +62,21 @@ function connectToServer() {
 	};
 
 	socket.onmessage = (e: MessageEvent) => {
+		const raw = '' + (e.data as any);
 		// only sample some frames for debug to avoid noise
-		if (typeof e.data === 'string' && e.data.length < 200) {
-			postMessage({ type: 'debug', data: '[worker] frame sample ' + e.data.slice(0,80) });
+		if (typeof raw === 'string' && raw.length < 200) {
+			postMessage({ type: 'debug', data: '[worker] frame sample ' + raw.slice(0,80) });
 		}
-		postMessage({ type: 'message', data: e.data });
+		if (typeof raw === 'string' && raw.startsWith('a[')) {
+			try {
+				const arr: string[] = JSON.parse(raw.slice(1));
+				for (const msg of arr) postMessage({ type: 'message', data: msg });
+				return;
+			} catch (e) {
+				postMessage({ type: 'debug', data: '[worker] failed to parse SockJS frame' });
+			}
+		}
+		postMessage({ type: 'message', data: raw });
 	};
 
 	socket.onclose = () => {
