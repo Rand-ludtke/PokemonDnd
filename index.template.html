@@ -174,17 +174,17 @@ window.PS = window.PS || {
 <script src="./js/client-connection.js?v1"></script>
 <script>
 // Poll for connection state to update loading UI (temporary until mainmenu renders)
-// (function pollConnected(){
-// 	try {
-// 		if (window.PS && window.PS.connection && window.PS.connection.connected) {
-// 			var lm=document.getElementById('loading-message');
-// 			if (lm && !/Connected\!/.test(lm.innerHTML)) lm.innerHTML='Connected! Loading lobby...';
-// 			return;
-// 		}
-// 	} catch(e){}
-// 	setTimeout(pollConnected,400);
-// })();
-// </script>
+(function pollConnected(){
+	try {
+		if (window.PS && window.PS.connection && window.PS.connection.connected) {
+			var lm=document.getElementById('loading-message');
+			if (lm && !/Connected\!/.test(lm.innerHTML)) lm.innerHTML='Connected! Loading lobby...';
+			return;
+		}
+	} catch(e){}
+	setTimeout(pollConnected,400);
+})();
+</script>
 <!-- Modern bundle supplies its own module system; legacy libs omitted. -->
 
 <script>
