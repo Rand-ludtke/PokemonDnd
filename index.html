@@ -50,14 +50,17 @@ https://psim.us/dev
 </head>
 <body>
 <style>
-/* Interaction hardening: ensure wrappers don't swallow clicks */
-#mainmenu { pointer-events: auto !important; }
-.mainmenuwrapper { pointer-events: none; }
-.mainmenuwrapper .mainmenu, .mainmenuwrapper .rightmenu, .mainmenuwrapper .leftmenu { pointer-events: auto; }
+/* Interaction hardening: ensure mainmenu contents are always interactive */
+#mainmenu, #mainmenu * { pointer-events: auto !important; }
+/* Do NOT globally disable pointer events on wrappers; if you need to disable a temp placeholder, add data-ps-placeholder */
+.mainmenuwrapper[data-ps-placeholder] { pointer-events: none; }
 /* Hide loading message cleanly when hidden */
 #loading-message.hidden { display: none !important; }
 /* Force-hide friends disabled banner if text still slips through */
 [data-ps-hide-friends] { display: none !important; }
+/* Teambuilder: let clicks fall through empty parts of the filter bar to the input */
+.searchboxwrapper .dexlist-filters { pointer-events: none; }
+.searchboxwrapper .dexlist-filters * { pointer-events: auto; }
 </style>
 <div id="header" class="header">
 	<img class="logo" src="./pokemonshowdownbeta.png" srcset="./pokemonshowdownbeta@2x.png 2x" alt="Pok&eacute;mon Showdown! (beta)" width="146" height="44" /><div class="maintabbarbottom"></div>
