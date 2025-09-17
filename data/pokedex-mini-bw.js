@@ -1577,5 +1577,8 @@ exports.BattlePokemonSpritesBW = {
 	pokestarwhitedoorprop:{num:-5013},
 	pokestarblackbelt:{num:-5014,front:{w:96,h:96},back:{w:96,h:96}},
 	pokestarblackbeltprop:{num:-5014},
-	pokestarufopropu2:{num:-5001}
+	pokestarufopropu2:{num:-5001},
+	tsmon:{num:10000},
+	tsmon2:{num:10000},
+	tsmon3:{num:10000}
 };
