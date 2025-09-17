@@ -57,7 +57,10 @@ Config.loginserverid = 'server-pokemondnd-xyz';
 // Ensure explicit server definition (harmless when client route matches)
 Config.server = Config.defaultserver;
 // Local same-origin proxy to avoid browser CORS when contacting official loginserver
-Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy';
+// Prefer a same-origin proxy so the browser will accept/set login cookies as first-party
+// This endpoint should proxy to https://play.pokemonshowdown.com/~~<loginserverid>/action.php
+// See server-side example in build-tools/update or provide your own.
+Config.loginProxy = '/login-proxy.php';
 // Force resource/sprite host to www (static asset domain) so images don't request from battle server
 Config.resourceprefix = 'https://www.pokemondnd.xyz/';
 // Some UI elements use Dex.fxPrefix for tiny icons (gender etc); ensure it aligns
