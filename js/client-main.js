@@ -1177,9 +1177,9 @@ PS.join(roomid,{parentElem:elem});
 'part,leave,close':function(target,cmd,elem){
 var roomid=(/[^a-z0-9-]/.test(target)?toID(target):target)||this.id;
 var room=PS.rooms[roomid];
-var battle=room==null?void 0:room.battle;
+var battle=(room==null?void 0:room.battle)||null;
 
-if((room==null?void 0:room.type)==="battle"&&!battle.ended&&battle.mySide.id===PS.user.userid&&!battle.isReplay){
+if((room==null?void 0:room.type)==="battle"&&battle&&!battle.ended&&battle.mySide.id===PS.user.userid&&!battle.isReplay){
 PS.join("forfeitbattle",{parentElem:elem});
 return;
 }
