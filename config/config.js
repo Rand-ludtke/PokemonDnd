@@ -58,13 +58,15 @@ Config.loginserverid = 'server-pokemondnd-xyz';
 Config.server = Config.defaultserver;
 // Local same-origin proxy to avoid browser CORS when contacting official loginserver
 Config.loginProxy = 'https://server.pokemondnd.xyz/login-proxy';
-// Force resource/sprite host to www (static asset domain) so images don't request from battle server
-Config.resourceprefix = 'https://www.pokemondnd.xyz/';
-// Some UI elements use Dex.fxPrefix for tiny icons (gender etc); ensure it aligns
-Config.fxprefix = Config.resourceprefix + 'fx/';
+// Force resource/sprite host to the official static sprite CDN to avoid 404s on custom host
+// This only affects static images like sprites, types, item icons, and fx icons.
+Config.resourceprefix = 'https://play.pokemonshowdown.com/';
+// Some UI elements use Dex.fxPrefix for tiny icons (gender etc); align with the sprite CDN
+Config.fxprefix = 'https://play.pokemonshowdown.com/fx/';
 // Override routes.client AFTER autogen so Dex.resourcePrefix picks up the www host for static assets
 // Keep server connection pointing to battle host via Config.server
 if (Config.routes) {
-	Config.routes.client = 'www.pokemondnd.xyz';
-	Config.routes.root = 'www.pokemondnd.xyz';
+	// Use official static CDN for client asset base so Dex.resourcePrefix resolves sprites correctly
+	Config.routes.client = 'play.pokemonshowdown.com';
+	Config.routes.root = 'play.pokemonshowdown.com';
 }
