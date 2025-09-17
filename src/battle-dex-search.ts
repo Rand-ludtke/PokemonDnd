@@ -284,10 +284,13 @@ export class DexSearch {
 		// different from the aliases in the search index and are given
 		// higher priority. We'll do a normal pass through the index with
 		// the alias text before any other passes.
+		// Note: Guard against missing global BattleAliases in minimal deployments.
 		let queryAlias;
-		if (query in BattleAliases) {
-			if (['sub', 'tr'].includes(query) || !toID(BattleAliases[query]).startsWith(query)) {
-				queryAlias = toID(BattleAliases[query]);
+		const BA: Record<string, string> | null = (globalThis as any)?.BattleAliases || null;
+		if (BA && (query in BA)) {
+			const aliasTarget = BA[query];
+			if (["sub", "tr"].includes(query) || !toID(aliasTarget).startsWith(query)) {
+				queryAlias = toID(aliasTarget);
 				let aliasPassType: SearchPassType = (queryAlias === 'hiddenpower' ? 'exact' : 'normal');
 				searchPasses.unshift([aliasPassType, DexSearch.getClosest(queryAlias), queryAlias]);
 			}

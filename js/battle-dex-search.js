@@ -284,10 +284,13 @@ if(query.length>1)searchPasses.push(['alias',i,query]);
 
 
 
+
 var queryAlias;
-if(query in BattleAliases){
-if(['sub','tr'].includes(query)||!toID(BattleAliases[query]).startsWith(query)){
-queryAlias=toID(BattleAliases[query]);
+var BA=(globalThis==null?void 0:globalThis.BattleAliases)||null;
+if(BA&&query in BA){
+var aliasTarget=BA[query];
+if(["sub","tr"].includes(query)||!toID(aliasTarget).startsWith(query)){
+queryAlias=toID(aliasTarget);
 var aliasPassType=queryAlias==='hiddenpower'?'exact':'normal';
 searchPasses.unshift([aliasPassType,DexSearch.getClosest(queryAlias),queryAlias]);
 }
