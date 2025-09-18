@@ -194,6 +194,17 @@ window.PS = window.PS || {
 </script>
 
 <script src="./js/battledata.js?v1"></script>
+<!-- Ensure battle engine and related helpers are present globally before any panels that depend on them -->
+<!-- Sound helper used by animations -->
+<script src="./js/battle-sound.js?v1"></script>
+<!-- BattleScene and animations (required by Battle when frames are provided) -->
+<script src="./js/battle-animations.js?v1"></script>
+<!-- Core battle engine (defines global Battle) -->
+<script src="./js/battle.js?v1"></script>
+<!-- Tooltips and move calculators (used by panel-battle UI) -->
+<script src="./js/battle-tooltips.js?v1"></script>
+<!-- Choice builder used by chat and battle panels -->
+<script src="./js/battle-choices.js?v1"></script>
 <!-- Removed color-thief (optional feature) for minimal deployment -->
 <!-- Minimal HTML sanitizer shim (caja substitute) so BattleLog.sanitizeHTML doesn't throw. -->
 <script>
@@ -250,7 +261,6 @@ if(!window.html4){
 		 'panel-chat','panel-chat-tournament','panel-battle',
 		 // Teambuilder deps: search backend, tooltips (BattleStatGuesser), searchresults, then team editor
 		 'battle-dex-search',
-		 'battle-tooltips',
 		 'battle-searchresults',
 		 'battle-team-editor',
 		 'panel-teambuilder','panel-teambuilder-team','panel-teamdropdown','panel-ladder','panel-page',
