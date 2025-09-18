@@ -170,8 +170,8 @@ window.PS = window.PS || {
 </script>
 <!-- Use CDN SockJS directly to avoid local 404 race (removed incorrect integrity that blocked load) -->
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js" crossorigin="anonymous"></script>
-<!-- jQuery is required by the battle engine/animations and tooltips code; use local copy from sibling site folder to avoid CDN/CSP issues -->
-<script src="/server.pokemondnd.xyz/js/jquery-1.9.1.min.js"></script>
+<!-- jQuery is required by the battle engine/animations and tooltips code; load local vendored copy to avoid CDN/CSP issues -->
+<script src="./js/jquery-1.9.1.min.js?v1"></script>
 <script src="./js/client-core.js?v1"></script>
 <script src="./js/client-connection.js?v1"></script>
 <script>
