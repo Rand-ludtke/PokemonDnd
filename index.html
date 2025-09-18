@@ -197,6 +197,8 @@ window.PS = window.PS || {
 <!-- Ensure battle engine and related helpers are present globally before any panels that depend on them -->
 <!-- Sound helper used by animations -->
 <script src="./js/battle-sound.js?v1"></script>
+<!-- Move animations registry (defines global BattleMoveAnims used by BattleScene) -->
+<script src="./js/battle-animations-moves.js?v1"></script>
 <!-- BattleScene and animations (required by Battle when frames are provided) -->
 <script src="./js/battle-animations.js?v1"></script>
 <!-- Core battle engine (defines global Battle) -->
@@ -258,13 +260,15 @@ if(!window.html4){
 		 'panels','panel-mainmenu','panel-rooms',
 		 // MiniEdit must load before chat entry mounts
 		 'miniedit',
+		 // Popups (user popup, options, etc.) are needed by chat/mainmenu interactions (e.g. Challenge)
+		 'panel-popups',
 		 'panel-chat','panel-chat-tournament','panel-battle',
 		 // Teambuilder deps: search backend, tooltips (BattleStatGuesser), searchresults, then team editor
 		 'battle-dex-search',
 		 'battle-searchresults',
 		 'battle-team-editor',
 		 'panel-teambuilder','panel-teambuilder-team','panel-teamdropdown','panel-ladder','panel-page',
-		 'panel-popups','panel-resources','panel-topbar'
+		 'panel-resources','panel-topbar'
 	 ];
 	 function loadNext(){
 		 if(!panelScripts.length){
