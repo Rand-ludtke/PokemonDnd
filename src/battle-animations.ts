@@ -529,15 +529,16 @@ export class BattleScene implements BattleSceneStub {
 
 	runMoveAnim(moveid: ID, participants: Pokemon[]) {
 		if (!this.animating) return;
-		let animEntry = BattleMoveAnims[moveid];
+		let animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims[moveid] : undefined;
 		if (this.acceleration >= 3) {
 			const targetsSelf = !participants[1] || participants[0] === participants[1];
 			const isSpecial = !targetsSelf && this.battle.dex.moves.get(moveid).category === 'Special';
-			animEntry = BattleOtherAnims[targetsSelf ? 'fastanimself' : isSpecial ? 'fastanimspecial' : 'fastanimattack'];
+			animEntry = BattleOtherAnims[targetsSelf ? 'fastanimself' : isSpecial ? 'fastanimspecial' : 'fastanimattack'] as any;
 		} else if (!animEntry) {
-			animEntry = BattleMoveAnims['tackle'];
+			animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims['tackle'] : undefined;
 		}
-		animEntry.anim(this, participants.map(p => p.sprite));
+		const animFn = (animEntry && (animEntry as any).anim) ? (animEntry as any).anim : BattleOtherAnims.fastanimattack.anim;
+		animFn(this, participants.map(p => p.sprite));
 	}
 
 	runOtherAnim(moveid: ID, participants: Pokemon[]) {
@@ -552,13 +553,16 @@ export class BattleScene implements BattleSceneStub {
 
 	runResidualAnim(moveid: ID, pokemon: Pokemon) {
 		if (!this.animating) return;
-		BattleMoveAnims[moveid].residualAnim!(this, [pokemon.sprite]);
+		if ((typeof (globalThis as any).BattleMoveAnims === 'object') && (BattleMoveAnims as any)[moveid] && (BattleMoveAnims as any)[moveid].residualAnim) {
+			(BattleMoveAnims as any)[moveid].residualAnim(this, [pokemon.sprite]);
+		}
 	}
 
 	runPrepareAnim(moveid: ID, attacker: Pokemon, defender: Pokemon) {
 		if (!this.animating || this.acceleration >= 3) return;
-		const moveAnim = BattleMoveAnims[moveid];
-		if (!moveAnim.prepareAnim) return;
+		if (typeof (globalThis as any).BattleMoveAnims !== 'object') return;
+		const moveAnim = (BattleMoveAnims as any)[moveid];
+		if (!moveAnim || !moveAnim.prepareAnim) return;
 		moveAnim.prepareAnim(this, [attacker.sprite, defender.sprite]);
 	}
 

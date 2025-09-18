@@ -529,15 +529,16 @@ return false;
 
 runMoveAnim=function runMoveAnim(moveid,participants){
 if(!this.animating)return;
-var animEntry=BattleMoveAnims[moveid];
+var animEntry=typeof globalThis.BattleMoveAnims==='object'&&globalThis.BattleMoveAnims?BattleMoveAnims[moveid]:undefined;
 if(this.acceleration>=3){
 var targetsSelf=!participants[1]||participants[0]===participants[1];
 var isSpecial=!targetsSelf&&this.battle.dex.moves.get(moveid).category==='Special';
 animEntry=BattleOtherAnims[targetsSelf?'fastanimself':isSpecial?'fastanimspecial':'fastanimattack'];
 }else if(!animEntry){
-animEntry=BattleMoveAnims['tackle'];
+animEntry=typeof globalThis.BattleMoveAnims==='object'&&globalThis.BattleMoveAnims?BattleMoveAnims['tackle']:undefined;
 }
-animEntry.anim(this,participants.map(function(p){return p.sprite;}));
+var animFn=animEntry&&animEntry.anim?animEntry.anim:BattleOtherAnims.fastanimattack.anim;
+animFn(this,participants.map(function(p){return p.sprite;}));
 };_proto.
 
 runOtherAnim=function runOtherAnim(moveid,participants){
@@ -552,13 +553,16 @@ BattleStatusAnims[moveid].anim(this,participants.map(function(p){return p.sprite
 
 runResidualAnim=function runResidualAnim(moveid,pokemon){
 if(!this.animating)return;
+if(typeof globalThis.BattleMoveAnims==='object'&&BattleMoveAnims[moveid]&&BattleMoveAnims[moveid].residualAnim){
 BattleMoveAnims[moveid].residualAnim(this,[pokemon.sprite]);
+}
 };_proto.
 
 runPrepareAnim=function runPrepareAnim(moveid,attacker,defender){
 if(!this.animating||this.acceleration>=3)return;
+if(typeof globalThis.BattleMoveAnims!=='object')return;
 var moveAnim=BattleMoveAnims[moveid];
-if(!moveAnim.prepareAnim)return;
+if(!moveAnim||!moveAnim.prepareAnim)return;
 moveAnim.prepareAnim(this,[attacker.sprite,defender.sprite]);
 };_proto.
 
