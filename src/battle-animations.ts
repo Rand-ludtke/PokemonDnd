@@ -529,12 +529,14 @@ export class BattleScene implements BattleSceneStub {
 
 	runMoveAnim(moveid: ID, participants: Pokemon[]) {
 		if (!this.animating) return;
+		// Prefer specific move animation if available; only use fast fallbacks when missing
 		let animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims[moveid] : undefined;
-		if (this.acceleration >= 3) {
+		if (!animEntry) {
 			const targetsSelf = !participants[1] || participants[0] === participants[1];
 			const isSpecial = !targetsSelf && this.battle.dex.moves.get(moveid).category === 'Special';
 			animEntry = BattleOtherAnims[targetsSelf ? 'fastanimself' : isSpecial ? 'fastanimspecial' : 'fastanimattack'] as any;
-		} else if (!animEntry) {
+		}
+		if (!animEntry) {
 			animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims['tackle'] : undefined;
 		}
 		const animFn = (animEntry && (animEntry as any).anim) ? (animEntry as any).anim : BattleOtherAnims.fastanimattack.anim;

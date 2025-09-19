@@ -529,12 +529,14 @@ return false;
 
 runMoveAnim=function runMoveAnim(moveid,participants){
 if(!this.animating)return;
+
 var animEntry=typeof globalThis.BattleMoveAnims==='object'&&globalThis.BattleMoveAnims?BattleMoveAnims[moveid]:undefined;
-if(this.acceleration>=3){
+if(!animEntry){
 var targetsSelf=!participants[1]||participants[0]===participants[1];
 var isSpecial=!targetsSelf&&this.battle.dex.moves.get(moveid).category==='Special';
 animEntry=BattleOtherAnims[targetsSelf?'fastanimself':isSpecial?'fastanimspecial':'fastanimattack'];
-}else if(!animEntry){
+}
+if(!animEntry){
 animEntry=typeof globalThis.BattleMoveAnims==='object'&&globalThis.BattleMoveAnims?BattleMoveAnims['tackle']:undefined;
 }
 var animFn=animEntry&&animEntry.anim?animEntry.anim:BattleOtherAnims.fastanimattack.anim;
