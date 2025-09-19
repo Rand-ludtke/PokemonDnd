@@ -195,12 +195,56 @@ window.PS = window.PS || {
 
 <script src="./js/battledata.js?v1"></script>
 <!-- Ensure battle engine and related helpers are present globally before any panels that depend on them -->
-<!-- Sound helper used by animations -->
+<!-- Provide minimal PS.prefs so battle-sound can safely subscribe even before client-main initializes prefs -->
+<script>
+window.PS = window.PS || {};
+PS.prefs = PS.prefs || {
+	effectvolume: 50,
+	musicvolume: 50,
+	mute: false,
+	subscribeAndRun: function(cb){ try { cb(); } catch(e) {} }
+};
+</script>
+<!-- Sound helper used by animations (requires PS.prefs) -->
 <script src="./js/battle-sound.js?v1"></script>
+<!-- BattleScene core and other animations (defines BattleOtherAnims and runtime) -->
+<script src="./js/battle-animations.js?v1"></script>
 <!-- Move animations registry (defines global BattleMoveAnims used by BattleScene) -->
 <script src="./js/battle-animations-moves.js?v1"></script>
-<!-- BattleScene and animations (required by Battle when frames are provided) -->
-<script src="./js/battle-animations.js?v1"></script>
+<!-- Watchdog: if BattleMoveAnims didn't register (404/caching), try fallbacks dynamically -->
+<script>
+(function(){
+	function dbg(){ try { return localStorage.getItem('ps_debug_connect') === '1'; } catch(e){ return false; } }
+	function loadScript(url, next){
+		var s=document.createElement('script'); s.src=url; s.async=false; s.onload=next; s.onerror=next; document.head.appendChild(s);
+	}
+	function ensureBattleMoveAnims(){
+		try{
+			if (typeof window.BattleMoveAnims === 'object' && window.BattleMoveAnims) return;
+			var tried=[];
+			var candidates=[
+				'./js/battle-animations-moves.js?v1',
+				'./js/battle-animations-moves.js?v='+Date.now(),
+				'./js/battle-animations-moves.js',
+				'/js/battle-animations-moves.js',
+				'https://play.pokemonshowdown.com/js/battle-animations-moves.js'
+			];
+			function next(){
+				if (typeof window.BattleMoveAnims === 'object' && window.BattleMoveAnims) {
+					if (dbg()) console.debug('[PS][moves] BattleMoveAnims loaded via', tried[tried.length-1]||'initial');
+					return;
+				}
+				var u=candidates.shift();
+				if(!u){ console.warn('[PS][moves] BattleMoveAnims unavailable after fallbacks:', tried.join(', ')); return; }
+				tried.push(u); if(dbg()) console.debug('[PS][moves] trying', u); loadScript(u,function(){ setTimeout(next,0); });
+			}
+			next();
+		}catch(e){ console.warn('[PS][moves] ensureBattleMoveAnims error', e); }
+	}
+	// queue immediately after initial tag is parsed
+	setTimeout(ensureBattleMoveAnims, 0);
+})();
+</script>
 <!-- Core battle engine (defines global Battle) -->
 <script src="./js/battle.js?v1"></script>
 <!-- Tooltips and move calculators (used by panel-battle UI) -->
