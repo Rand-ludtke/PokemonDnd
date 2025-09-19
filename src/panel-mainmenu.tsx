@@ -786,7 +786,13 @@ export class TeamForm extends preact.Component<{
 		const teamElement = this.base!.querySelector<HTMLButtonElement>('button[name=team]');
 		const teamKey = teamElement!.value;
 		const team = teamKey ? PS.teams.byKey[teamKey] : undefined;
-		if (!window.BattleFormats[toID(format)]?.team && !team) {
+		// Offline/fallback support: if formats haven't loaded yet, allow
+		// well-known teamless formats like Random Battle without requiring a team.
+		const formatId = toID(format);
+		const formatEntry = window.BattleFormats?.[formatId];
+		const isTeamlessByName = /random|challengecup|hackmonscup/.test(formatId);
+		const needsTeam = formatEntry ? !formatEntry.team : !isTeamlessByName;
+		if (needsTeam && !team) {
 			PS.alert('You need to go into the Teambuilder and build a team for this format.', {
 				parentElem: teamElement!,
 			});
@@ -806,13 +812,15 @@ export class TeamForm extends preact.Component<{
 			target = target.parentNode as HTMLButtonElement | null;
 		}
 	};
-	render() {
-		if (window.BattleFormats) {
+		render() {
+			// Ensure a sensible default format even if BattleFormats hasn't loaded yet.
+			if (!this.format) this.format = `gen${Dex.gen}randombattle`;
+			if (window.BattleFormats) {
 			const starredPrefs = PS.prefs.starredformats || {};
 			// .reverse() because the newest starred format should be the default one
 			const starred = Object.keys(starredPrefs).filter(id => starredPrefs[id] === true).reverse();
-			if (!this.format) {
-				this.format = `gen${Dex.gen}randombattle`;
+				if (!this.format) {
+					this.format = `gen${Dex.gen}randombattle`;
 				for (let id of starred) {
 					let format = window.BattleFormats[id];
 					if (!format) continue;

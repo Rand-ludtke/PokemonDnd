@@ -786,7 +786,13 @@ var format=_this7.format;
 var teamElement=_this7.base.querySelector('button[name=team]');
 var teamKey=teamElement.value;
 var team=teamKey?PS.teams.byKey[teamKey]:undefined;
-if(!((_window$BattleFormats2=window.BattleFormats[toID(format)])!=null&&_window$BattleFormats2.team)&&!team){
+
+
+var formatId=toID(format);
+var formatEntry=(_window$BattleFormats2=window.BattleFormats)==null?void 0:_window$BattleFormats2[formatId];
+var isTeamlessByName=/random|challengecup|hackmonscup/.test(formatId);
+var needsTeam=formatEntry?!formatEntry.team:!isTeamlessByName;
+if(needsTeam&&!team){
 PS.alert('You need to go into the Teambuilder and build a team for this format.',{
 parentElem:teamElement
 });
@@ -807,6 +813,8 @@ target=target.parentNode;
 }
 };return _this7;}_inheritsLoose(TeamForm,_preact$Component3);var _proto6=TeamForm.prototype;_proto6.
 render=function render(){
+
+if(!this.format)this.format="gen"+Dex.gen+"randombattle";
 if(window.BattleFormats){
 var starredPrefs=PS.prefs.starredformats||{};
 
