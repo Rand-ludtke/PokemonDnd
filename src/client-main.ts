@@ -2426,8 +2426,13 @@ export const PS = new class extends PSModel {
 		// support hardcoded PM room-IDs
 		if (options.id.startsWith('challenge-')) {
 			this.requestNotifications();
-			options.id = `dm-${options.id.slice(10)}` as RoomID;
-			options.args = { challengeMenuOpen: true };
+			const targetUser = options.id.slice(10) as ID;
+			// Open a DM with the target and pre-open the challenge UI.
+			// Also set pmTarget so the DM knows who we're challenging.
+			options.args = { ...(options.args || {}), challengeMenuOpen: true, pmTarget: targetUser };
+			const myUserid = PS.user.userid;
+			const dmId = `dm-${[targetUser, myUserid].sort().join('-')}` as RoomID;
+			options.id = dmId;
 		}
 		if (options.id.startsWith('dm-')) {
 			this.requestNotifications();
@@ -2448,9 +2453,7 @@ export const PS = new class extends PSModel {
 		}
 		if (preexistingRoom) {
 			if (options.autofocus) {
-				if (options.args?.challengeMenuOpen) {
-					(preexistingRoom as ChatRoom).openChallenge();
-				}
+				if (options.args?.challengeMenuOpen) (preexistingRoom as ChatRoom).openChallenge();
 				this.focusRoom(preexistingRoom.id);
 			}
 			return preexistingRoom;

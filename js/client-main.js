@@ -2426,8 +2426,13 @@ addRoom=function addRoom(options){var _options$autofocus,_options$autoclosePop,_
 
 if(options.id.startsWith('challenge-')){
 this.requestNotifications();
-options.id="dm-"+options.id.slice(10);
-options.args={challengeMenuOpen:true};
+var targetUser=options.id.slice(10);
+
+
+options.args=Object.assign({},options.args||{},{challengeMenuOpen:true,pmTarget:targetUser});
+var myUserid=PS.user.userid;
+var dmId="dm-"+[targetUser,myUserid].sort().join('-');
+options.id=dmId;
 }
 if(options.id.startsWith('dm-')){
 this.requestNotifications();
@@ -2448,9 +2453,7 @@ preexistingRoom=this.rooms[options.id];
 }
 if(preexistingRoom){
 if(options.autofocus){var _options$args;
-if((_options$args=options.args)!=null&&_options$args.challengeMenuOpen){
-preexistingRoom.openChallenge();
-}
+if((_options$args=options.args)!=null&&_options$args.challengeMenuOpen)preexistingRoom.openChallenge();
 this.focusRoom(preexistingRoom.id);
 }
 return preexistingRoom;
