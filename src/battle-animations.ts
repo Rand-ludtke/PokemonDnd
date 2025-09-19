@@ -529,15 +529,17 @@ export class BattleScene implements BattleSceneStub {
 
 	runMoveAnim(moveid: ID, participants: Pokemon[]) {
 		if (!this.animating) return;
-		// Prefer specific move animation if available; only use fast fallbacks when missing
-		let animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims[moveid] : undefined;
+		const id = toID(moveid);
+		let animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? (BattleMoveAnims as any)[id] : undefined;
+		// Prefer specific move animations when available; only use fast fallbacks if none exist
 		if (!animEntry) {
-			const targetsSelf = !participants[1] || participants[0] === participants[1];
-			const isSpecial = !targetsSelf && this.battle.dex.moves.get(moveid).category === 'Special';
-			animEntry = BattleOtherAnims[targetsSelf ? 'fastanimself' : isSpecial ? 'fastanimspecial' : 'fastanimattack'] as any;
-		}
-		if (!animEntry) {
-			animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? BattleMoveAnims['tackle'] : undefined;
+			if (this.acceleration >= 3) {
+				const targetsSelf = !participants[1] || participants[0] === participants[1];
+				const isSpecial = !targetsSelf && this.battle.dex.moves.get(id).category === 'Special';
+				animEntry = BattleOtherAnims[targetsSelf ? 'fastanimself' : isSpecial ? 'fastanimspecial' : 'fastanimattack'] as any;
+			} else {
+				animEntry = (typeof (globalThis as any).BattleMoveAnims === 'object' && (globalThis as any).BattleMoveAnims) ? (BattleMoveAnims as any)['tackle'] : undefined;
+			}
 		}
 		const animFn = (animEntry && (animEntry as any).anim) ? (animEntry as any).anim : BattleOtherAnims.fastanimattack.anim;
 		animFn(this, participants.map(p => p.sprite));
@@ -555,15 +557,17 @@ export class BattleScene implements BattleSceneStub {
 
 	runResidualAnim(moveid: ID, pokemon: Pokemon) {
 		if (!this.animating) return;
-		if ((typeof (globalThis as any).BattleMoveAnims === 'object') && (BattleMoveAnims as any)[moveid] && (BattleMoveAnims as any)[moveid].residualAnim) {
-			(BattleMoveAnims as any)[moveid].residualAnim(this, [pokemon.sprite]);
+		const id = toID(moveid);
+		if ((typeof (globalThis as any).BattleMoveAnims === 'object') && (BattleMoveAnims as any)[id] && (BattleMoveAnims as any)[id].residualAnim) {
+			(BattleMoveAnims as any)[id].residualAnim(this, [pokemon.sprite]);
 		}
 	}
 
 	runPrepareAnim(moveid: ID, attacker: Pokemon, defender: Pokemon) {
 		if (!this.animating || this.acceleration >= 3) return;
 		if (typeof (globalThis as any).BattleMoveAnims !== 'object') return;
-		const moveAnim = (BattleMoveAnims as any)[moveid];
+		const id = toID(moveid);
+		const moveAnim = (BattleMoveAnims as any)[id];
 		if (!moveAnim || !moveAnim.prepareAnim) return;
 		moveAnim.prepareAnim(this, [attacker.sprite, defender.sprite]);
 	}
