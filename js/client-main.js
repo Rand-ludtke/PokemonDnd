@@ -2432,6 +2432,11 @@ var targetUser=options.id.slice(10);
 options.args=Object.assign({},options.args||{},{challengeMenuOpen:true,pmTarget:targetUser});
 var myUserid=PS.user.userid;
 var dmId="dm-"+[targetUser,myUserid].sort().join('-');
+try{
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][challenge] addRoom from challenge-',{targetUser:targetUser,myUserid:myUserid,dmId:dmId,args:options.args});
+}
+}catch(_unused10){}
 options.id=dmId;
 }
 if(options.id.startsWith('dm-')){
@@ -2747,7 +2752,7 @@ window.webkitNotifications.requestPermission();
 }else if(window.Notification){
 Notification.requestPermission==null||Notification.requestPermission(function(permission){});
 }
-}catch(_unused10){}
+}catch(_unused11){}
 };_proto7.
 playNotificationSound=function playNotificationSound(){
 if(window.BattleSound&&!this.prefs.mute){
@@ -2777,7 +2782,7 @@ PSConnection.connect();
 console.warn('[PS][debug] failed to invoke static connect()',e);
 }
 },50);
-}catch(_unused11){}
+}catch(_unused12){}
 
 
 setTimeout(function(){
@@ -2785,6 +2790,6 @@ try{var _PS;
 if(!((_PS=window.PS)!=null&&_PS.connection)){
 console.warn('[PS][debug] No PS.connection after 2s. Keys on PS:',Object.keys(window.PS||{}));
 }
-}catch(_unused12){}
+}catch(_unused13){}
 },2000);
 //# sourceMappingURL=client-main.js.map

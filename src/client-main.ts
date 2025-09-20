@@ -2432,6 +2432,11 @@ export const PS = new class extends PSModel {
 			options.args = { ...(options.args || {}), challengeMenuOpen: true, pmTarget: targetUser };
 			const myUserid = PS.user.userid;
 			const dmId = `dm-${[targetUser, myUserid].sort().join('-')}` as RoomID;
+			try {
+				if (localStorage.getItem('ps_debug_connect') === '1') {
+					console.debug('[PS][challenge] addRoom from challenge-', { targetUser, myUserid, dmId, args: options.args });
+				}
+			} catch {}
 			options.id = dmId;
 		}
 		if (options.id.startsWith('dm-')) {

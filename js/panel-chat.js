@@ -511,6 +511,15 @@ if(!this.pmTarget){
 this.add("|error|Can only be used in a PM.");
 return;
 }
+try{
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][challenge] openChallenge()',{
+room:this.id,
+pmTarget:this.pmTarget,
+challengeMenuOpenBefore:this.challengeMenuOpen
+});
+}
+}catch(_unused2){}
 this.challengeMenuOpen=true;
 this.update(null);
 };_proto.
@@ -526,6 +535,16 @@ this.challengeMenuOpen=true;
 }else{
 this.challengeMenuOpen=false;
 }
+try{
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][challenge] cancelChallenge()',{
+room:this.id,
+pmTarget:this.pmTarget,
+challenging:!!this.challenging,
+challengeMenuOpenNow:this.challengeMenuOpen
+});
+}
+}catch(_unused3){}
 this.update(null);
 };_proto.
 parseChallenge=function parseChallenge(challengeString){var _splitChallenge$;
@@ -548,6 +567,16 @@ return challenge;
 updateChallenge=function updateChallenge(name,challengeString){
 var challenge=this.parseChallenge(challengeString);
 var userid=toID(name);
+try{
+if(localStorage.getItem('ps_debug_connect')==='1'){
+console.debug('[PS][challenge] updateChallenge()',{
+room:this.id,
+from:name,
+pmTarget:this.pmTarget,
+parsed:challenge
+});
+}
+}catch(_unused4){}
 
 if(userid===PS.user.userid){
 if(!challenge&&!this.challenging){
@@ -1177,6 +1206,18 @@ room.update(null);
 render=function render(){var _room$tour,_PS$connection;
 var room=this.props.room;
 var tinyLayout=room.width<450;
+
+try{
+if(localStorage.getItem('ps_debug_connect')==='1'&&room.pmTarget){
+console.debug('[PS][challenge] render()',{
+room:room.id,
+pmTarget:room.pmTarget,
+challengeMenuOpen:room.challengeMenuOpen,
+challenging:!!room.challenging,
+challenged:!!room.challenged
+});
+}
+}catch(_unused5){}
 
 var challengeTo=room.challenging?preact.h("div",{"class":"challenge"},
 preact.h("p",null,"Waiting for ",room.pmTarget,"..."),

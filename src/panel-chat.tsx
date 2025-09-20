@@ -511,6 +511,15 @@ export class ChatRoom extends PSRoom {
 			this.add(`|error|Can only be used in a PM.`);
 			return;
 		}
+		try {
+			if (localStorage.getItem('ps_debug_connect') === '1') {
+				console.debug('[PS][challenge] openChallenge()', {
+					room: this.id,
+					pmTarget: this.pmTarget,
+					challengeMenuOpenBefore: this.challengeMenuOpen,
+				});
+			}
+		} catch {}
 		this.challengeMenuOpen = true;
 		this.update(null);
 	}
@@ -526,6 +535,16 @@ export class ChatRoom extends PSRoom {
 		} else {
 			this.challengeMenuOpen = false;
 		}
+		try {
+			if (localStorage.getItem('ps_debug_connect') === '1') {
+				console.debug('[PS][challenge] cancelChallenge()', {
+					room: this.id,
+					pmTarget: this.pmTarget,
+					challenging: !!this.challenging,
+					challengeMenuOpenNow: this.challengeMenuOpen,
+				});
+			}
+		} catch {}
 		this.update(null);
 	}
 	parseChallenge(challengeString: string | null): Challenge | null {
@@ -548,6 +567,16 @@ export class ChatRoom extends PSRoom {
 	updateChallenge(name: string, challengeString: string) {
 		const challenge = this.parseChallenge(challengeString);
 		const userid = toID(name);
+		try {
+			if (localStorage.getItem('ps_debug_connect') === '1') {
+				console.debug('[PS][challenge] updateChallenge()', {
+					room: this.id,
+					from: name,
+					pmTarget: this.pmTarget,
+					parsed: challenge,
+				});
+			}
+		} catch {}
 
 		if (userid === PS.user.userid) {
 			if (!challenge && !this.challenging) {
@@ -1177,6 +1206,18 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 	override render() {
 		const room = this.props.room;
 		const tinyLayout = room.width < 450;
+
+		try {
+			if (localStorage.getItem('ps_debug_connect') === '1' && room.pmTarget) {
+				console.debug('[PS][challenge] render()', {
+					room: room.id,
+					pmTarget: room.pmTarget,
+					challengeMenuOpen: room.challengeMenuOpen,
+					challenging: !!room.challenging,
+					challenged: !!room.challenged,
+				});
+			}
+		} catch {}
 
 		const challengeTo = room.challenging ? <div class="challenge">
 			<p>Waiting for {room.pmTarget}...</p>
