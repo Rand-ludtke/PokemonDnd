@@ -1227,12 +1227,12 @@ challenged:!!room.challenged
 }
 }catch(_unused6){}
 
-var challengeTo=room.challenging?preact.h("div",{"class":"challenge"},
+var challengeTo=room.challenging?preact.h("div",{"class":"challenge challenge-to",style:"position:relative; z-index:2; background:rgba(0,0,0,0.02);"},
 preact.h("p",null,"Waiting for ",room.pmTarget,"..."),
 preact.h(TeamForm,{format:room.challenging.formatName,teamFormat:room.challenging.teamFormat,onSubmit:null},
 preact.h("button",{"data-cmd":"/cancelchallenge","class":"button"},"Cancel")
 )
-):room.challengeMenuOpen?preact.h("div",{"class":"challenge"},
+):room.challengeMenuOpen?preact.h("div",{"class":"challenge challenge-open",style:"position:relative; z-index:2; background:rgba(0,0,0,0.02);"},
 preact.h(TeamForm,{onSubmit:this.makeChallenge},
 preact.h("button",{type:"submit","class":"button button-first"},
 preact.h("strong",null,"Challenge")
@@ -1243,7 +1243,7 @@ preact.h("button",{"data-cmd":"/cancelchallenge","class":"button"},"Cancel")
 )
 ):null;
 
-var challengeFrom=room.challenged?preact.h("div",{"class":"challenge"},
+var challengeFrom=room.challenged?preact.h("div",{"class":"challenge challenge-from",style:"position:relative; z-index:2; background:rgba(0,0,0,0.02);"},
 !!room.challenged.message&&preact.h("p",null,room.challenged.message),
 preact.h(TeamForm,{format:room.challenged.formatName,teamFormat:room.challenged.teamFormat,onSubmit:this.acceptChallenge},
 preact.h("button",{type:"submit","class":room.challenged.formatName?"button button-first":"button"},
@@ -1372,7 +1372,7 @@ this.setControlsJSX(props.children);
 this.updateScroll();
 return false;
 };_proto7.
-setControlsJSX=function setControlsJSX(jsx){
+setControlsJSX=function setControlsJSX(jsx){var _this12=this;
 var elem=this.base.firstChild;
 var children=elem.children;
 var controlsElem=children[children.length-1];
@@ -1390,7 +1390,44 @@ elem.appendChild(controlsElem);
 }
 
 if(controlsElem.children[0])controlsElem.removeChild(controlsElem.children[0]);
+try{
+console.info('[PS][challenge] ChatLog.setControlsJSX mount',{
+room:this.props.room.id,
+pmTarget:this.props.room.pmTarget,
+challengeMenuOpen:this.props.room.challengeMenuOpen,
+jsxType:typeof jsx
+});
+controlsElem.style.outline='2px dashed #f0f';
+controlsElem.style.zIndex='3';
+}catch(_unused7){}
+try{
 preact.render(preact.h("div",null,jsx),controlsElem);
+
+setTimeout(function(){
+try{var _controlsElem;
+var rect=controlsElem.getBoundingClientRect==null?void 0:controlsElem.getBoundingClientRect();
+var cs=controlsElem&&(window.getComputedStyle==null?void 0:window.getComputedStyle(controlsElem));
+console.info('[PS][challenge] controls bbox',{
+room:_this12.props.room.id,
+rect:rect,
+display:cs==null?void 0:cs.display,
+opacity:cs==null?void 0:cs.opacity,
+visibility:cs==null?void 0:cs.visibility,
+position:cs==null?void 0:cs.position,
+childrenCount:(_controlsElem=controlsElem)==null||(_controlsElem=_controlsElem.children)==null?void 0:_controlsElem.length
+});
+}catch(_unused8){}
+},0);
+}catch(err){
+console.error('[PS][challenge] ChatLog.setControlsJSX render error',err);
+try{
+var fallback=document.createElement('div');
+fallback.className='challenge';
+fallback.style.cssText='background:#fcd2b3;border:1px solid #f57b21;color:#682f05;padding:4px;';
+fallback.textContent='Challenge controls failed to render. See console for details.';
+controlsElem.appendChild(fallback);
+}catch(_unused9){}
+}
 this.updateScroll();
 };_proto7.
 updateScroll=function updateScroll(){var _this$props$room$log;

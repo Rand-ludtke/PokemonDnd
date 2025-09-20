@@ -1227,12 +1227,12 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 			}
 		} catch {}
 
-		const challengeTo = room.challenging ? <div class="challenge">
+		const challengeTo = room.challenging ? <div class="challenge challenge-to" style="position:relative; z-index:2; background:rgba(0,0,0,0.02);">
 			<p>Waiting for {room.pmTarget}...</p>
 			<TeamForm format={room.challenging.formatName} teamFormat={room.challenging.teamFormat} onSubmit={null}>
 				<button data-cmd="/cancelchallenge" class="button">Cancel</button>
 			</TeamForm>
-		</div> : room.challengeMenuOpen ? <div class="challenge">
+		</div> : room.challengeMenuOpen ? <div class="challenge challenge-open" style="position:relative; z-index:2; background:rgba(0,0,0,0.02);">
 			<TeamForm onSubmit={this.makeChallenge}>
 				<button type="submit" class="button button-first">
 					<strong>Challenge</strong>
@@ -1243,7 +1243,7 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 			</TeamForm>
 		</div> : null;
 
-		const challengeFrom = room.challenged ? <div class="challenge">
+		const challengeFrom = room.challenged ? <div class="challenge challenge-from" style="position:relative; z-index:2; background:rgba(0,0,0,0.02);">
 			{!!room.challenged.message && <p>{room.challenged.message}</p>}
 			<TeamForm format={room.challenged.formatName} teamFormat={room.challenged.teamFormat} onSubmit={this.acceptChallenge}>
 				<button type="submit" class={room.challenged.formatName ? `button button-first` : `button`}>
@@ -1390,7 +1390,44 @@ export class ChatLog extends preact.Component<{
 		}
 		// for some reason, the replaceNode feature isn't working?
 		if (controlsElem.children[0]) controlsElem.removeChild(controlsElem.children[0]);
-		preact.render(<div>{jsx}</div>, controlsElem);
+		try {
+			console.info('[PS][challenge] ChatLog.setControlsJSX mount', {
+				room: this.props.room.id,
+				pmTarget: this.props.room.pmTarget,
+				challengeMenuOpen: this.props.room.challengeMenuOpen,
+				jsxType: typeof jsx,
+			});
+			controlsElem.style.outline = '2px dashed #f0f';
+			controlsElem.style.zIndex = '3';
+		} catch {}
+		try {
+			preact.render(<div>{jsx}</div>, controlsElem);
+			// Post-render diagnostics to verify visibility/position
+			setTimeout(() => {
+				try {
+					const rect = controlsElem!.getBoundingClientRect?.();
+					const cs = (controlsElem && (window.getComputedStyle?.(controlsElem))) as CSSStyleDeclaration | null;
+					console.info('[PS][challenge] controls bbox', {
+						room: this.props.room.id,
+						rect,
+						display: cs?.display,
+						opacity: cs?.opacity,
+						visibility: cs?.visibility,
+						position: cs?.position,
+						childrenCount: controlsElem?.children?.length,
+					});
+				} catch {}
+			}, 0);
+		} catch (err) {
+			console.error('[PS][challenge] ChatLog.setControlsJSX render error', err);
+			try {
+				const fallback = document.createElement('div');
+				fallback.className = 'challenge';
+				fallback.style.cssText = 'background:#fcd2b3;border:1px solid #f57b21;color:#682f05;padding:4px;';
+				fallback.textContent = 'Challenge controls failed to render. See console for details.';
+				controlsElem.appendChild(fallback);
+			} catch {}
+		}
 		this.updateScroll();
 	}
 	updateScroll() {
