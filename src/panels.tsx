@@ -440,6 +440,13 @@ export class PSView extends preact.Component {
 					const href = elem.getAttribute('data-href') || elem.getAttribute('href');
 					let roomid = PS.router.extractRoomID(href);
 
+					// Un-gated debug: capture clicks to challenge-* routes
+					try {
+						if (href?.startsWith('challenge-') || roomid?.startsWith('challenge-')) {
+							console.info('[PS][challenge] click intercept', { href, roomid });
+						}
+					} catch {}
+
 					// keep this in sync with .htaccess
 					const shortLinks = /^(rooms?suggestions?|suggestions?|adminrequests?|forgotpassword|bugs?(reports?)?|formatsuggestions|rules?|faq|credits?|privacy|contact|dex|(damage)?calc|insecure|replays?|devdiscord|smogdex|smogcord|forums?|trustworthy-dlc-link)$/;
 					if (roomid === 'appeal' || roomid === 'appeals') roomid = 'view-help-request--appeal' as RoomID;
@@ -459,6 +466,11 @@ export class PSView extends preact.Component {
 							parentElem: elem,
 							location,
 						});
+						try {
+							if (roomid.startsWith('challenge-')) {
+								console.info('[PS][challenge] PS.join roomid', roomid);
+							}
+						} catch {}
 						if (!PS.isPopup(PS.rooms[roomid])) {
 							PS.closeAllPopups();
 						}

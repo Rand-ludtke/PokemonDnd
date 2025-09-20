@@ -2433,9 +2433,7 @@ options.args=Object.assign({},options.args||{},{challengeMenuOpen:true,pmTarget:
 var myUserid=PS.user.userid;
 var dmId="dm-"+[targetUser,myUserid].sort().join('-');
 try{
-if(localStorage.getItem('ps_debug_connect')==='1'){
-console.debug('[PS][challenge] addRoom from challenge-',{targetUser:targetUser,myUserid:myUserid,dmId:dmId,args:options.args});
-}
+console.info('[PS][challenge] addRoom from challenge-',{targetUser:targetUser,myUserid:myUserid,dmId:dmId,args:options.args});
 }catch(_unused10){}
 options.id=dmId;
 }

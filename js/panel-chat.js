@@ -257,6 +257,16 @@ _this=_PSRoom.call(this,options)||this;_this.classType='chat';_this.users={};_th
 
 
 
+
+
+
+
+
+
+
+
+
+
 handleHighlight=function(args){
 var name;
 var message;
@@ -505,21 +515,19 @@ return;
 if(room.choices.isDone())this.sendDirect("/choose "+room.choices.toString());
 this.update(null);
 }
-});if((_options$args=options.args)!=null&&_options$args.pmTarget)_this.pmTarget=options.args.pmTarget;if((_options$args2=options.args)!=null&&_options$args2.challengeMenuOpen)_this.challengeMenuOpen=true;if((_options$args3=options.args)!=null&&_options$args3.initialSlash)_this.initialSlash=true;_this.updateTarget(_this.pmTarget);_this.connect();return _this;}_inheritsLoose(ChatRoom,_PSRoom);var _proto=ChatRoom.prototype;_proto.connect=function connect(){if(!this.connected||this.connected==='autoreconnect'){if(this.pmTarget===null)PS.send("/join "+this.id);this.connected=true;this.connectWhenLoggedIn=false;}};_proto.receiveLine=function receiveLine(args){switch(args[0]){case'users':var usernames=args[1].split(',');var count=parseInt(usernames.shift(),10);this.setUsers(count,usernames);return;case'join':case'j':case'J':this.addUser(args[1]);this.handleJoinLeave("join",args[1],args[0]==="J");return true;case'leave':case'l':case'L':this.removeUser(args[1]);this.handleJoinLeave("leave",args[1],args[0]==="L");return true;case'name':case'n':case'N':this.renameUser(args[1],args[2]);break;case'tournament':case'tournaments':this.tour||(this.tour=new ChatTournament(this));this.tour.receiveLine(args);return;case'noinit':if(this.battle){this.loadReplay();}else{this.receiveLine(['bigerror','Room does not exist']);}return;case'expire':this.connected='expired';this.receiveLine(['',"This room has expired (you can't chat in it anymore)"]);return;case'chat':case'c':if((args[2]+" ").startsWith('/challenge ')){this.updateChallenge(args[1],args[2].slice(11));return;}else if(args[2].startsWith('/warn ')){var reason=args[2].replace('/warn ','');PS.join("rules-warn",{args:{type:'warn',message:(reason==null?void 0:reason.trim())||undefined},parentElem:null});return;}case'c:':if(args[0]==='c:')PS.lastMessageTime=args[1];this.lastMessage=args;this.joinLeave=null;this.markUserActive(args[args[0]==='c:'?2:1]);if(this.tour)this.tour.joinLeave=null;if(this.id.startsWith("dm-")){var fromUser=args[args[0]==='c:'?2:1];if(toID(fromUser)===PS.user.userid)break;var message=args[args[0]==='c:'?3:2];this.notify({title:""+this.title,body:message});}else{this.subtleNotify();}break;case':':this.timeOffset=Math.trunc(Date.now()/1000)-(parseInt(args[1],10)||0);break;}_PSRoom.prototype.receiveLine.call(this,args);};_proto.handleReconnect=function handleReconnect(msg){if(this.battle){this.battle.reset();this.battle.stepQueue=[];return false;}else{var _this$lastMessage;var lines=msg.split('\n');var cutOffStart=0;var cutOffEnd=lines.length;var cutOffTime=parseInt(PS.lastMessageTime);var cutOffExactLine=this.lastMessage?'|'+((_this$lastMessage=this.lastMessage)==null?void 0:_this$lastMessage.join('|')):'';var reconnectMessage='|raw|<div class="infobox">You reconnected.</div>';for(var i=0;i<lines.length;i++){if(lines[i].startsWith('|users|')){this.add(lines[i]);}if(lines[i]===cutOffExactLine){cutOffStart=i+1;}else if(lines[i].startsWith("|c:|")){var time=parseInt(lines[i].split('|')[2]||'');if(time<cutOffTime)cutOffStart=i;}if(lines[i].startsWith('|raw|<div class="infobox"> You joined ')){reconnectMessage="|raw|<div class=\"infobox\">You reconnected to "+lines[i].slice(38);cutOffEnd=i;if(!lines[i-1])cutOffEnd=i-1;}}lines=lines.slice(cutOffStart,cutOffEnd);if(lines.length){this.receiveLine(["raw","<div class=\"infobox\">You disconnected.</div>"]);for(var _i8=0,_lines2=lines;_i8<_lines2.length;_i8++){var line=_lines2[_i8];this.receiveLine(BattleTextParser.parseLine(line));}this.receiveLine(BattleTextParser.parseLine(reconnectMessage));}this.update(null);return true;}};_proto.updateTarget=function updateTarget(name){var selfWithGroup=""+(PS.user.group||' ')+PS.user.name;if(this.id==='dm-'){this.pmTarget=selfWithGroup;this.setUsers(1,[selfWithGroup]);this.title="Console";}else if(this.id.startsWith('dm-')){var id=this.id.slice(3);if(toID(name)!==id)name=null;name||(name=this.pmTarget||id);if(/[A-Za-z0-9]/.test(name.charAt(0)))name=" "+name;var nameWithGroup=name;name=name.slice(1);this.pmTarget=name;if(!PS.user.userid){this.setUsers(1,[nameWithGroup]);}else{this.setUsers(2,[nameWithGroup,selfWithGroup]);}this.title="[DM] "+nameWithGroup.trim();}};ChatRoom.getHighlight=function getHighlight(message,roomid){var _this$highlightRegExp,_this$highlightRegExp2;var highlights=PS.prefs.highlights||{};if(Array.isArray(highlights)){highlights={global:highlights};PS.prefs.set('highlights',highlights);}if(!PS.prefs.noselfhighlight&&PS.user.nameRegExp){var _PS$user$nameRegExp;if((_PS$user$nameRegExp=PS.user.nameRegExp)!=null&&_PS$user$nameRegExp.test(message))return true;}if(!this.highlightRegExp){try{this.updateHighlightRegExp(highlights);}catch(_unused){return false;}}var id=PS.server.id+'#'+roomid;var globalHighlightsRegExp=(_this$highlightRegExp=this.highlightRegExp)==null?void 0:_this$highlightRegExp['global'];var roomHighlightsRegExp=(_this$highlightRegExp2=this.highlightRegExp)==null?void 0:_this$highlightRegExp2[id];return(globalHighlightsRegExp==null?void 0:globalHighlightsRegExp.test(message))||(roomHighlightsRegExp==null?void 0:roomHighlightsRegExp.test(message));};ChatRoom.updateHighlightRegExp=function updateHighlightRegExp(highlights){this.highlightRegExp={};for(var i in highlights){if(!highlights[i].length){this.highlightRegExp[i]=null;continue;}this.highlightRegExp[i]=new RegExp('(?:\\b|(?!\\w))(?:'+highlights[i].join('|')+')(?:\\b|(?!\\w))','i');}};_proto.
+});if((_options$args=options.args)!=null&&_options$args.pmTarget)_this.pmTarget=options.args.pmTarget;if((_options$args2=options.args)!=null&&_options$args2.challengeMenuOpen)_this.challengeMenuOpen=true;if((_options$args3=options.args)!=null&&_options$args3.initialSlash)_this.initialSlash=true;try{var _options$args4,_options$args5;if((_options$args4=options.args)!=null&&_options$args4.pmTarget||(_options$args5=options.args)!=null&&_options$args5.challengeMenuOpen){console.info('[PS][challenge] ChatRoom ctor',{room:_this.id,pmTarget:_this.pmTarget,challengeMenuOpen:_this.challengeMenuOpen,args:options.args});}}catch(_unused){}_this.updateTarget(_this.pmTarget);_this.connect();return _this;}_inheritsLoose(ChatRoom,_PSRoom);var _proto=ChatRoom.prototype;_proto.connect=function connect(){if(!this.connected||this.connected==='autoreconnect'){if(this.pmTarget===null)PS.send("/join "+this.id);this.connected=true;this.connectWhenLoggedIn=false;}};_proto.receiveLine=function receiveLine(args){switch(args[0]){case'users':var usernames=args[1].split(',');var count=parseInt(usernames.shift(),10);this.setUsers(count,usernames);return;case'join':case'j':case'J':this.addUser(args[1]);this.handleJoinLeave("join",args[1],args[0]==="J");return true;case'leave':case'l':case'L':this.removeUser(args[1]);this.handleJoinLeave("leave",args[1],args[0]==="L");return true;case'name':case'n':case'N':this.renameUser(args[1],args[2]);break;case'tournament':case'tournaments':this.tour||(this.tour=new ChatTournament(this));this.tour.receiveLine(args);return;case'noinit':if(this.battle){this.loadReplay();}else{this.receiveLine(['bigerror','Room does not exist']);}return;case'expire':this.connected='expired';this.receiveLine(['',"This room has expired (you can't chat in it anymore)"]);return;case'chat':case'c':if((args[2]+" ").startsWith('/challenge ')){this.updateChallenge(args[1],args[2].slice(11));return;}else if(args[2].startsWith('/warn ')){var reason=args[2].replace('/warn ','');PS.join("rules-warn",{args:{type:'warn',message:(reason==null?void 0:reason.trim())||undefined},parentElem:null});return;}case'c:':if(args[0]==='c:')PS.lastMessageTime=args[1];this.lastMessage=args;this.joinLeave=null;this.markUserActive(args[args[0]==='c:'?2:1]);if(this.tour)this.tour.joinLeave=null;if(this.id.startsWith("dm-")){var fromUser=args[args[0]==='c:'?2:1];if(toID(fromUser)===PS.user.userid)break;var message=args[args[0]==='c:'?3:2];this.notify({title:""+this.title,body:message});}else{this.subtleNotify();}break;case':':this.timeOffset=Math.trunc(Date.now()/1000)-(parseInt(args[1],10)||0);break;}_PSRoom.prototype.receiveLine.call(this,args);};_proto.handleReconnect=function handleReconnect(msg){if(this.battle){this.battle.reset();this.battle.stepQueue=[];return false;}else{var _this$lastMessage;var lines=msg.split('\n');var cutOffStart=0;var cutOffEnd=lines.length;var cutOffTime=parseInt(PS.lastMessageTime);var cutOffExactLine=this.lastMessage?'|'+((_this$lastMessage=this.lastMessage)==null?void 0:_this$lastMessage.join('|')):'';var reconnectMessage='|raw|<div class="infobox">You reconnected.</div>';for(var i=0;i<lines.length;i++){if(lines[i].startsWith('|users|')){this.add(lines[i]);}if(lines[i]===cutOffExactLine){cutOffStart=i+1;}else if(lines[i].startsWith("|c:|")){var time=parseInt(lines[i].split('|')[2]||'');if(time<cutOffTime)cutOffStart=i;}if(lines[i].startsWith('|raw|<div class="infobox"> You joined ')){reconnectMessage="|raw|<div class=\"infobox\">You reconnected to "+lines[i].slice(38);cutOffEnd=i;if(!lines[i-1])cutOffEnd=i-1;}}lines=lines.slice(cutOffStart,cutOffEnd);if(lines.length){this.receiveLine(["raw","<div class=\"infobox\">You disconnected.</div>"]);for(var _i8=0,_lines2=lines;_i8<_lines2.length;_i8++){var line=_lines2[_i8];this.receiveLine(BattleTextParser.parseLine(line));}this.receiveLine(BattleTextParser.parseLine(reconnectMessage));}this.update(null);return true;}};_proto.updateTarget=function updateTarget(name){var selfWithGroup=""+(PS.user.group||' ')+PS.user.name;if(this.id==='dm-'){this.pmTarget=selfWithGroup;this.setUsers(1,[selfWithGroup]);this.title="Console";}else if(this.id.startsWith('dm-')){var id=this.id.slice(3);if(toID(name)!==id)name=null;name||(name=this.pmTarget||id);if(/[A-Za-z0-9]/.test(name.charAt(0)))name=" "+name;var nameWithGroup=name;name=name.slice(1);this.pmTarget=name;if(!PS.user.userid){this.setUsers(1,[nameWithGroup]);}else{this.setUsers(2,[nameWithGroup,selfWithGroup]);}this.title="[DM] "+nameWithGroup.trim();}};ChatRoom.getHighlight=function getHighlight(message,roomid){var _this$highlightRegExp,_this$highlightRegExp2;var highlights=PS.prefs.highlights||{};if(Array.isArray(highlights)){highlights={global:highlights};PS.prefs.set('highlights',highlights);}if(!PS.prefs.noselfhighlight&&PS.user.nameRegExp){var _PS$user$nameRegExp;if((_PS$user$nameRegExp=PS.user.nameRegExp)!=null&&_PS$user$nameRegExp.test(message))return true;}if(!this.highlightRegExp){try{this.updateHighlightRegExp(highlights);}catch(_unused2){return false;}}var id=PS.server.id+'#'+roomid;var globalHighlightsRegExp=(_this$highlightRegExp=this.highlightRegExp)==null?void 0:_this$highlightRegExp['global'];var roomHighlightsRegExp=(_this$highlightRegExp2=this.highlightRegExp)==null?void 0:_this$highlightRegExp2[id];return(globalHighlightsRegExp==null?void 0:globalHighlightsRegExp.test(message))||(roomHighlightsRegExp==null?void 0:roomHighlightsRegExp.test(message));};ChatRoom.updateHighlightRegExp=function updateHighlightRegExp(highlights){this.highlightRegExp={};for(var i in highlights){if(!highlights[i].length){this.highlightRegExp[i]=null;continue;}this.highlightRegExp[i]=new RegExp('(?:\\b|(?!\\w))(?:'+highlights[i].join('|')+')(?:\\b|(?!\\w))','i');}};_proto.
 openChallenge=function openChallenge(){
 if(!this.pmTarget){
 this.add("|error|Can only be used in a PM.");
 return;
 }
 try{
-if(localStorage.getItem('ps_debug_connect')==='1'){
-console.debug('[PS][challenge] openChallenge()',{
+console.info('[PS][challenge] openChallenge()',{
 room:this.id,
 pmTarget:this.pmTarget,
 challengeMenuOpenBefore:this.challengeMenuOpen
 });
-}
-}catch(_unused2){}
+}catch(_unused3){}
 this.challengeMenuOpen=true;
 this.update(null);
 };_proto.
@@ -544,7 +552,7 @@ challenging:!!this.challenging,
 challengeMenuOpenNow:this.challengeMenuOpen
 });
 }
-}catch(_unused3){}
+}catch(_unused4){}
 this.update(null);
 };_proto.
 parseChallenge=function parseChallenge(challengeString){var _splitChallenge$;
@@ -576,7 +584,7 @@ pmTarget:this.pmTarget,
 parsed:challenge
 });
 }
-}catch(_unused4){}
+}catch(_unused5){}
 
 if(userid===PS.user.userid){
 if(!challenge&&!this.challenging){
@@ -1208,8 +1216,8 @@ var room=this.props.room;
 var tinyLayout=room.width<450;
 
 try{
-if(localStorage.getItem('ps_debug_connect')==='1'&&room.pmTarget){
-console.debug('[PS][challenge] render()',{
+if(room.pmTarget){
+console.info('[PS][challenge] render()',{
 room:room.id,
 pmTarget:room.pmTarget,
 challengeMenuOpen:room.challengeMenuOpen,
@@ -1217,7 +1225,7 @@ challenging:!!room.challenging,
 challenged:!!room.challenged
 });
 }
-}catch(_unused5){}
+}catch(_unused6){}
 
 var challengeTo=room.challenging?preact.h("div",{"class":"challenge"},
 preact.h("p",null,"Waiting for ",room.pmTarget,"..."),

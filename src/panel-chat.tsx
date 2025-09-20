@@ -63,6 +63,16 @@ export class ChatRoom extends PSRoom {
 		if (options.args?.pmTarget) this.pmTarget = options.args.pmTarget as string;
 		if (options.args?.challengeMenuOpen) this.challengeMenuOpen = true;
 		if (options.args?.initialSlash) this.initialSlash = true;
+		try {
+			if (options.args?.pmTarget || options.args?.challengeMenuOpen) {
+				console.info('[PS][challenge] ChatRoom ctor', {
+					room: this.id,
+					pmTarget: this.pmTarget,
+					challengeMenuOpen: this.challengeMenuOpen,
+					args: options.args,
+				});
+			}
+		} catch {}
 		this.updateTarget(this.pmTarget);
 		this.connect();
 	}
@@ -512,13 +522,11 @@ export class ChatRoom extends PSRoom {
 			return;
 		}
 		try {
-			if (localStorage.getItem('ps_debug_connect') === '1') {
-				console.debug('[PS][challenge] openChallenge()', {
-					room: this.id,
-					pmTarget: this.pmTarget,
-					challengeMenuOpenBefore: this.challengeMenuOpen,
-				});
-			}
+			console.info('[PS][challenge] openChallenge()', {
+				room: this.id,
+				pmTarget: this.pmTarget,
+				challengeMenuOpenBefore: this.challengeMenuOpen,
+			});
 		} catch {}
 		this.challengeMenuOpen = true;
 		this.update(null);
@@ -1208,8 +1216,8 @@ class ChatPanel extends PSRoomPanel<ChatRoom> {
 		const tinyLayout = room.width < 450;
 
 		try {
-			if (localStorage.getItem('ps_debug_connect') === '1' && room.pmTarget) {
-				console.debug('[PS][challenge] render()', {
+			if (room.pmTarget) {
+				console.info('[PS][challenge] render()', {
 					room: room.id,
 					pmTarget: room.pmTarget,
 					challengeMenuOpen: room.challengeMenuOpen,

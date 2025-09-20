@@ -142,7 +142,7 @@ class UserPanel extends PSRoomPanel<UserRoom> {
 				</p>
 			) : (
 				<p class="buttonbar">
-					<button class="button" data-href={`challenge-${user.userid}`} onClick={(ev: Event)=>{ try{ if(localStorage.getItem('ps_debug_connect')==='1') console.debug('[PS][challenge] user popup Challenge clicked', { userid: user.userid }); } catch(e){} }}>Challenge</button> {}
+					<button class="button" data-href={`challenge-${user.userid}`} onClick={(ev: Event)=>{ try{ ev.preventDefault(); ev.stopImmediatePropagation(); console.info('[PS][challenge] user popup Challenge clicked', { userid: user.userid }); PS.join(`challenge-${user.userid}` as RoomID, { parentElem: ev.currentTarget as any }); } catch(e){} }}>Challenge</button> {}
 					<button class="button" data-href={`dm-${user.userid}`}>Chat</button> {}
 					<button class="button" data-href={`useroptions-${user.userid}-${room.parentRoomid || ''}`}>{'\u2026'}</button>
 				</p>
