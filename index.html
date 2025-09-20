@@ -50,8 +50,12 @@ https://psim.us/dev
 </head>
 <body>
 <style>
-/* Interaction hardening: ensure mainmenu contents are always interactive */
-#mainmenu, #mainmenu * { pointer-events: auto !important; }
+/* Prevent a blank main menu from intercepting clicks/taps (mobile + desktop)
+	The container doesn't handle events; only real content inside does. */
+#mainmenu { pointer-events: none !important; }
+#mainmenu .mainmenu, #mainmenu .mainmenuwrapper, #mainmenu .panel, #mainmenu .ps-room { pointer-events: auto !important; }
+/* Hide completely if detected empty */
+#mainmenu.ps-empty { display: none !important; }
 /* Do NOT globally disable pointer events on wrappers; if you need to disable a temp placeholder, add data-ps-placeholder */
 .mainmenuwrapper[data-ps-placeholder] { pointer-events: none; }
 /* Hide loading message cleanly when hidden */
@@ -87,9 +91,9 @@ https://psim.us/dev
 					}
 				}
 			} catch(e) {}
-			// Always ensure main menu interactive regardless of news status
+			// Ensure main menu state does not force the container to catch clicks
 			var mm = document.getElementById('mainmenu');
-			if (mm) mm.style.pointerEvents = 'auto';
+			if (mm) mm.style.removeProperty('pointer-events');
 		}
 		function cleanupPlaceholder(){
 			try {
@@ -99,7 +103,8 @@ https://psim.us/dev
 				const mm = document.getElementById('mainmenu');
 				if(!mm) return;
 				mm.querySelectorAll('.mainmenuwrapper').forEach(w => { if(!w.hasAttribute('data-ps-bound')) w.remove(); });
-				mm.style.pointerEvents='auto';
+				// Let CSS control pointer-events gating; don't force container to intercept
+				mm.style.removeProperty('pointer-events');
 				if(!mm.innerHTML.trim()) mm.classList.add('ps-empty'); else mm.classList.remove('ps-empty');
 			} catch(e){}
 		}

@@ -705,6 +705,13 @@ p.or:after {
 	min-height: 100%;
 }
 
+/* Prevent a blank #mainmenu container from intercepting clicks/taps.
+   Only actual content inside should be interactive; container stays inert. */
+#mainmenu { pointer-events: none; }
+#mainmenu .mainmenu, #mainmenu .mainmenuwrapper, #mainmenu .panel, #mainmenu .ps-room { pointer-events: auto; }
+/* If the client detects it's empty, hide it entirely */
+#mainmenu.ps-empty { display: none; }
+
 .mainmenu-left {
 	padding: 25px 0 51px 0;
 	width: 300px;
