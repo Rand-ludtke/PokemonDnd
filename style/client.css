@@ -1089,6 +1089,7 @@ p.or:after {
 	min-height: 36px;
 	padding: 3px 4px 0 4px;
 	border-top: 1px solid #AAAAAA;
+	z-index: 2; /* ensure it’s above log content but below .chat-log > .controls */
 }
 .chat-log .notice,
 .chat-log .chat,

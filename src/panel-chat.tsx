@@ -1402,6 +1402,9 @@ export class ChatLog extends preact.Component<{
 		} catch {}
 		try {
 			preact.render(<div>{jsx}</div>, controlsElem);
+			// Force scroll to bottom so controls are brought into view
+			const logElem = elem;
+			logElem.scrollTop = logElem.scrollHeight;
 			// Post-render diagnostics to verify visibility/position
 			setTimeout(() => {
 				try {
@@ -1415,6 +1418,9 @@ export class ChatLog extends preact.Component<{
 						visibility: cs?.visibility,
 						position: cs?.position,
 						childrenCount: controlsElem?.children?.length,
+						scrollTop: logElem.scrollTop,
+						scrollHeight: logElem.scrollHeight,
+						clientHeight: logElem.clientHeight,
 					});
 				} catch {}
 			}, 0);

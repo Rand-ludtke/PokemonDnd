@@ -1403,6 +1403,9 @@ controlsElem.style.zIndex='3';
 try{
 preact.render(preact.h("div",null,jsx),controlsElem);
 
+var logElem=elem;
+logElem.scrollTop=logElem.scrollHeight;
+
 setTimeout(function(){
 try{var _controlsElem;
 var rect=controlsElem.getBoundingClientRect==null?void 0:controlsElem.getBoundingClientRect();
@@ -1414,7 +1417,10 @@ display:cs==null?void 0:cs.display,
 opacity:cs==null?void 0:cs.opacity,
 visibility:cs==null?void 0:cs.visibility,
 position:cs==null?void 0:cs.position,
-childrenCount:(_controlsElem=controlsElem)==null||(_controlsElem=_controlsElem.children)==null?void 0:_controlsElem.length
+childrenCount:(_controlsElem=controlsElem)==null||(_controlsElem=_controlsElem.children)==null?void 0:_controlsElem.length,
+scrollTop:logElem.scrollTop,
+scrollHeight:logElem.scrollHeight,
+clientHeight:logElem.clientHeight
 });
 }catch(_unused8){}
 },0);
